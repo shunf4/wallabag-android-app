@@ -17,8 +17,11 @@ import java.util.List;
 
 import fr.gaulupeau.apps.Poche.data.QueueHelper;
 import fr.gaulupeau.apps.Poche.data.Settings;
+import fr.gaulupeau.apps.Poche.data.dao.AnnotationDao;
 import fr.gaulupeau.apps.Poche.data.dao.ArticleDao;
 import fr.gaulupeau.apps.Poche.data.dao.DaoSession;
+import fr.gaulupeau.apps.Poche.data.dao.entities.Annotation;
+import fr.gaulupeau.apps.Poche.data.dao.entities.AnnotationRange;
 import fr.gaulupeau.apps.Poche.data.dao.entities.Article;
 import fr.gaulupeau.apps.Poche.data.dao.entities.QueueItem;
 import fr.gaulupeau.apps.Poche.data.dao.entities.Tag;
@@ -69,6 +72,9 @@ public class MainService extends IntentServiceBase {
         switch(actionRequest.getAction()) {
             case ARTICLE_CHANGE:
             case ARTICLE_TAGS_DELETE:
+            case ANNOTATION_ADD:
+            case ANNOTATION_UPDATE:
+            case ANNOTATION_DELETE:
             case ARTICLE_DELETE:
             case ADD_LINK:
                 Long queueChangedLength = serveSimpleRequest(actionRequest);
@@ -158,6 +164,27 @@ public class MainService extends IntentServiceBase {
                     }
                     break;
 
+                case ANNOTATION_ADD:
+                    if (queueHelper.addAnnotationToArticle(actionRequest.getArticleID(),
+                            Long.parseLong(actionRequest.getExtra()))) {
+                        queueChangedLength = queueHelper.getQueueLength();
+                    }
+                    break;
+
+                case ANNOTATION_UPDATE:
+                    if (queueHelper.updateAnnotationOnArticle(actionRequest.getArticleID(),
+                            Long.parseLong(actionRequest.getExtra()))) {
+                        queueChangedLength = queueHelper.getQueueLength();
+                    }
+                    break;
+
+                case ANNOTATION_DELETE:
+                    if (queueHelper.deleteAnnotationFromArticle(actionRequest.getArticleID(),
+                            Integer.parseInt(actionRequest.getExtra()))) {
+                        queueChangedLength = queueHelper.getQueueLength();
+                    }
+                    break;
+
                 case ARTICLE_DELETE:
                     if(queueHelper.deleteArticle(actionRequest.getArticleID())) {
                         queueChangedLength = queueHelper.getQueueLength();
@@ -215,36 +242,41 @@ public class MainService extends IntentServiceBase {
 
             int articleID = articleIdInteger != null ? articleIdInteger : -1;
 
-            boolean canTolerateNotFound = false;
+            boolean canTolerateNotFound = true;
 
             ActionResult itemResult = null;
             try {
                 QueueItem.Action action = item.getAction();
                 switch(action) {
-                    case ARTICLE_CHANGE: {
-                        canTolerateNotFound = true;
-
+                    case ARTICLE_CHANGE:
                         itemResult = syncArticleChange(item, articleID);
                         break;
-                    }
 
-                    case ARTICLE_TAGS_DELETE: {
-                        canTolerateNotFound = true;
-
+                    case ARTICLE_TAGS_DELETE:
                         itemResult = syncDeleteTagsFromArticle(item, articleID);
                         break;
-                    }
 
-                    case ARTICLE_DELETE: {
-                        canTolerateNotFound = true;
+                    case ANNOTATION_ADD:
+                        itemResult = syncAddAnnotationToArticle(item, articleID);
+                        break;
 
+                    case ANNOTATION_UPDATE:
+                        itemResult = syncUpdateAnnotationOnArticle(item, articleID);
+                        break;
+
+                    case ANNOTATION_DELETE:
+                        itemResult = syncDeleteAnnotationFromArticle(item, articleID);
+                        break;
+
+                    case ARTICLE_DELETE:
                         if(getWallabagServiceWrapper().deleteArticle(articleID) == null) {
                             itemResult = new ActionResult(ActionResult.ErrorType.NOT_FOUND);
                         }
                         break;
-                    }
 
                     case ADD_LINK: {
+                        canTolerateNotFound = false;
+
                         String link = item.getExtra();
                         if(link != null && !link.isEmpty()) {
                             if(getWallabagServiceWrapper().addArticle(link) == null) {
@@ -394,6 +426,93 @@ public class MainService extends IntentServiceBase {
                 Log.w(TAG, String.format("HTTP 404 while removing tag %s from article %d",
                         tag, articleID));
             }
+        }
+
+        return null;
+    }
+
+    private ActionResult syncAddAnnotationToArticle(QueueItem item, int articleId)
+            throws IncorrectConfigurationException, UnsuccessfulResponseException, IOException {
+        AnnotationDao annotationDao = getDaoSession().getAnnotationDao();
+        Annotation annotation = annotationDao.queryBuilder()
+                .where(AnnotationDao.Properties.Id.eq(Long.parseLong(item.getExtra()))).unique();
+
+        if (annotation == null) {
+            return new ActionResult(ActionResult.ErrorType.NOT_FOUND_LOCALLY,
+                    "Annotation wasn't found locally");
+        }
+
+        List<com.di72nn.stuff.wallabag.apiwrapper.models.Annotation.Range> ranges
+                = new ArrayList<>(annotation.getRanges().size());
+        for (AnnotationRange range : annotation.getRanges()) {
+            com.di72nn.stuff.wallabag.apiwrapper.models.Annotation.Range apiRange
+                    = new com.di72nn.stuff.wallabag.apiwrapper.models.Annotation.Range();
+
+            apiRange.start = range.getStart();
+            apiRange.end = range.getEnd();
+            apiRange.startOffset = range.getStartOffset();
+            apiRange.endOffset = range.getEndOffset();
+
+            ranges.add(apiRange);
+        }
+
+        Integer remoteId = null;
+
+        WallabagServiceWrapper wallabagServiceWrapper = getWallabagServiceWrapper();
+        try {
+            remoteId = wallabagServiceWrapper.getWallabagService()
+                    .addAnnotation(articleId, ranges, annotation.getText(), annotation.getQuote()).id;
+        } catch (NotFoundException e) {
+            Log.w(TAG, String.format("HTTP 404 while adding annotation %s to article %d",
+                    annotation, articleId));
+        }
+
+        if (remoteId != null) {
+            annotation.setAnnotationId(remoteId);
+
+            Log.d(TAG, "syncAddAnnotationToArticle() updating annotation with remote ID");
+            annotationDao.update(annotation);
+            Log.d(TAG, "syncAddAnnotationToArticle() updated annotation with remote ID");
+        }
+
+        return null;
+    }
+
+    private ActionResult syncUpdateAnnotationOnArticle(QueueItem item, int articleId)
+            throws IncorrectConfigurationException, UnsuccessfulResponseException, IOException {
+        Annotation annotation = getDaoSession().getAnnotationDao().queryBuilder()
+                .where(AnnotationDao.Properties.Id.eq(Long.parseLong(item.getExtra()))).unique();
+
+        if (annotation == null) {
+            return new ActionResult(ActionResult.ErrorType.NOT_FOUND_LOCALLY,
+                    "Annotation wasn't found locally");
+        }
+        if (annotation.getAnnotationId() == null) {
+            Log.w(TAG, "syncUpdateAnnotationOnArticle() annotation ID is null!");
+            return null;
+        }
+
+        WallabagServiceWrapper wallabagServiceWrapper = getWallabagServiceWrapper();
+        try {
+            wallabagServiceWrapper.getWallabagService()
+                    .updateAnnotation(annotation.getAnnotationId(), annotation.getText());
+        } catch (NotFoundException e) {
+            Log.w(TAG, String.format("HTTP 404 while updating annotation %s on article %d",
+                    annotation, articleId));
+        }
+
+        return null;
+    }
+
+    private ActionResult syncDeleteAnnotationFromArticle(QueueItem item, int articleId)
+            throws IncorrectConfigurationException, UnsuccessfulResponseException, IOException {
+        WallabagServiceWrapper wallabagServiceWrapper = getWallabagServiceWrapper();
+        try {
+            wallabagServiceWrapper.getWallabagService()
+                    .deleteAnnotation(Integer.parseInt(item.getExtra()));
+        } catch (NotFoundException e) {
+            Log.w(TAG, String.format("HTTP 404 while removing annotationId %s from article %d",
+                    item.getExtra(), articleId));
         }
 
         return null;
