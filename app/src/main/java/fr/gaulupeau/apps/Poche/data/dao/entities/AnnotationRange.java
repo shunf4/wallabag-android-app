@@ -3,6 +3,11 @@ package fr.gaulupeau.apps.Poche.data.dao.entities;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.util.Collection;
+
+import fr.gaulupeau.apps.Poche.data.dao.AnnotationRangeDao;
 
 @Entity
 public class AnnotationRange {
@@ -89,6 +94,11 @@ public class AnnotationRange {
                 ", startOffset=" + startOffset +
                 ", endOffset=" + endOffset +
                 '}';
+    }
+
+    public static QueryBuilder<AnnotationRange> getAnnotationRangesByAnnotationsQueryBuilder(
+            Collection<Long> annotationIds, AnnotationRangeDao dao) {
+        return dao.queryBuilder().where(AnnotationRangeDao.Properties.AnnotationId.in(annotationIds));
     }
 
 }
