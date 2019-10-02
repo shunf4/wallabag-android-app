@@ -12,6 +12,8 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.gaulupeau.apps.Poche.data.dao.AnnotationDao;
+import fr.gaulupeau.apps.Poche.data.dao.AnnotationRangeDao;
 import fr.gaulupeau.apps.Poche.data.dao.DaoMaster;
 import fr.gaulupeau.apps.Poche.data.dao.QueueItemDao;
 import fr.gaulupeau.apps.Poche.data.dao.entities.QueueItem;
@@ -33,24 +35,35 @@ class WallabagDbOpenHelper extends DaoMaster.OpenHelper {
         Log.i(TAG, "Upgrading schema from version " + oldVersion + " to " + newVersion);
 
         boolean migrationDone = false;
-        try {
-            if (oldVersion == 101 && newVersion == 102) {
-                String[] columnsToAdd = new String[]{
-                        "\"ORIGIN_URL\" TEXT",
-                        "\"AUTHORS\" TEXT",
-                        "\"PUBLISHED_AT\" INTEGER",
-                        "\"STARRED_AT\" INTEGER",
-                        "\"IS_PUBLIC\" INTEGER",
-                        "\"PUBLIC_UID\" TEXT"
-                };
-                for (String col : columnsToAdd) {
-                    db.execSQL("ALTER TABLE \"ARTICLE\" ADD COLUMN " + col + ";");
+        if (oldVersion >= 101 && newVersion <= 103) {
+            try {
+                if (oldVersion < 102) {
+                    Log.i(TAG, "Migration to version " + 102);
+
+                    String[] columnsToAdd = new String[]{
+                            "\"ORIGIN_URL\" TEXT",
+                            "\"AUTHORS\" TEXT",
+                            "\"PUBLISHED_AT\" INTEGER",
+                            "\"STARRED_AT\" INTEGER",
+                            "\"IS_PUBLIC\" INTEGER",
+                            "\"PUBLIC_UID\" TEXT"
+                    };
+                    for (String col : columnsToAdd) {
+                        db.execSQL("ALTER TABLE \"ARTICLE\" ADD COLUMN " + col + ";");
+                    }
+                }
+
+                if (oldVersion < 103) {
+                    Log.i(TAG, "Migration to version " + 103);
+
+                    AnnotationDao.createTable(db, true);
+                    AnnotationRangeDao.createTable(db, true);
                 }
 
                 migrationDone = true;
+            } catch (Exception e) {
+                Log.e(TAG, "Migration error", e);
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Migration error", e);
         }
 
         if (!migrationDone) genericMigration(db, oldVersion, newVersion);
