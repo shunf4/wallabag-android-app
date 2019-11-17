@@ -12,6 +12,8 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.gaulupeau.apps.Poche.data.dao.ArticleContentDao;
+import fr.gaulupeau.apps.Poche.data.dao.ArticleDao;
 import fr.gaulupeau.apps.Poche.data.dao.DaoMaster;
 import fr.gaulupeau.apps.Poche.data.dao.QueueItemDao;
 import fr.gaulupeau.apps.Poche.data.dao.entities.QueueItem;
@@ -33,7 +35,7 @@ class WallabagDbOpenHelper extends DaoMaster.OpenHelper {
         Log.i(TAG, "Upgrading schema from version " + oldVersion + " to " + newVersion);
 
         boolean migrationDone = false;
-        if (oldVersion >= 101 && newVersion <= 102) {
+        if (oldVersion >= 101 && newVersion <= 103) {
             try {
                 if (oldVersion < 102) {
                     Log.i(TAG, "Migrating to version " + 102);
@@ -49,6 +51,21 @@ class WallabagDbOpenHelper extends DaoMaster.OpenHelper {
                     for (String col : columnsToAdd) {
                         db.execSQL("ALTER TABLE \"ARTICLE\" ADD COLUMN " + col + ";");
                     }
+                }
+
+                if (oldVersion < 103) {
+                    Log.i(TAG, "Migrating to version " + 103);
+
+                    ArticleContentDao.createTable(db, false);
+
+                    db.execSQL("insert into " + ArticleContentDao.TABLENAME +
+                            "(" + ArticleContentDao.Properties.Id.columnName +
+                            ", " + ArticleContentDao.Properties.Content.columnName + ")" +
+                            " select " + ArticleDao.Properties.Id.columnName + ", CONTENT" +
+                            " from " + ArticleDao.TABLENAME);
+
+                    // SQLite can't drop columns; just removing the data
+                    db.execSQL("update " + ArticleContentDao.TABLENAME + " set CONTENT = null;");
                 }
 
                 migrationDone = true;
