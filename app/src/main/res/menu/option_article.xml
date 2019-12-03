@@ -31,8 +31,16 @@
         android:icon="@android:drawable/ic_menu_share"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/menuShareAsHTML"
+        android:title="@string/menuShareAsHTML"
+        android:icon="@android:drawable/ic_menu_send"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/menuChangeTitle"
         android:title="@string/menu_changeTitle"/>
+    <item
+        android:id="@+id/menuReload"
+        android:title="@string/menuReload"/>
     <item
         android:id="@+id/menuManageTags"
         android:title="@string/menu_manageTags"/>

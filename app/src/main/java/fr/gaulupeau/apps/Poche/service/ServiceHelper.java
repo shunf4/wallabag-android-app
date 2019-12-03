@@ -186,6 +186,15 @@ public class ServiceHelper {
         startService(context, request);
     }
 
+    public static void reloadContent(Context context, int articleID) {
+        Log.d(TAG, "reloadContent() started");
+
+        ActionRequest request = new ActionRequest(ActionRequest.Action.RELOAD_CONTENT);
+        request.setArticleID(articleID);
+
+        startService(context, request);
+    }
+
     private static void addNextRequest(ActionRequest actionRequest, ActionRequest nextRequest) {
         while(actionRequest.getNextRequest() != null) actionRequest = actionRequest.getNextRequest();
 
@@ -201,6 +210,7 @@ public class ServiceHelper {
             case SYNC_QUEUE:
             case UPDATE_ARTICLES:
             case SWEEP_DELETED_ARTICLES:
+            case RELOAD_CONTENT:
                 startService(context, request, true);
                 break;
 

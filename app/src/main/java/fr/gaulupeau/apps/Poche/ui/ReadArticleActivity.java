@@ -313,8 +313,16 @@ public class ReadArticleActivity extends BaseActionBarActivity {
                 toggleFavorite();
                 break;
 
+            case R.id.menuReload:
+                reloadContent();
+                break;
+
             case R.id.menuShare:
                 shareArticle();
+                break;
+
+            case R.id.menuShareAsHTML:
+                shareArticleAsHTML();
                 break;
 
             case R.id.menuChangeTitle:
@@ -937,7 +945,15 @@ public class ReadArticleActivity extends BaseActionBarActivity {
     }
 
     private void shareArticle() {
-       shareArticle(articleTitle, articleUrl);
+        shareArticle(articleTitle, articleUrl);
+    }
+
+    private void shareArticleAsHTML() {
+        Intent send = new Intent(Intent.ACTION_SEND);
+        send.setType("text/html");
+        send.putExtra(Intent.EXTRA_TEXT, getHtmlContent());
+
+        startActivity(Intent.createChooser(send, getString(R.string.share_article_as_html_title)));
     }
 
     private void shareArticle(String articleTitle , String articleUrl) {
@@ -1000,6 +1016,10 @@ public class ReadArticleActivity extends BaseActionBarActivity {
 
     private void changeTitle(String title) {
         OperationsHelper.changeArticleTitle(this, article.getArticleId(), title);
+    }
+
+    private void reloadContent() {
+        OperationsHelper.reloadContent(this, article.getArticleId());
     }
 
     private void manageTags() {

@@ -161,6 +161,17 @@ public class EventProcessor {
         }
     }
 
+    @Subscribe
+    public void onReloadFinishedEvent(ReloadFinishedEvent event) {
+        Log.d(TAG, "onReloadFinishedEvent() started");
+
+        if (event.isSucceed()) {
+            showToast(R.string.reloadFinished_succeed_toast, 3);
+        } else {
+            showToast(R.string.reloadFinished_fail_toast, 3);
+        }
+    }
+
     @Subscribe(sticky = true)
     public void onUpdateArticlesStartedEvent(UpdateArticlesStartedEvent event) {
         Log.d(TAG, "onUpdateArticlesStartedEvent() started");
@@ -643,7 +654,7 @@ public class EventProcessor {
         return notificationManager;
     }
 
-    private void showToast(final String text, final int duration) {
+    private void showToast(final int text, final int duration) {
         getMainHandler().post(new Runnable() {
             @Override
             public void run() {

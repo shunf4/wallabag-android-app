@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import fr.gaulupeau.apps.Poche.data.dao.entities.ArticleTagsJoin;
 import fr.gaulupeau.apps.Poche.data.dao.entities.Tag;
 import fr.gaulupeau.apps.Poche.events.ArticlesChangedEvent;
 import fr.gaulupeau.apps.Poche.events.EventHelper;
+import fr.gaulupeau.apps.Poche.events.FeedsChangedEvent;
 import fr.gaulupeau.apps.Poche.service.ServiceHelper;
 
 import static fr.gaulupeau.apps.Poche.events.EventHelper.notifyAboutArticleChange;
@@ -126,6 +128,22 @@ public class OperationsHelper {
         ServiceHelper.changeArticleTitle(context, article.getArticleId());
 
         Log.d(TAG, "changeArticleTitle() finished");
+    }
+
+    public static void reloadContent(Context context, int articleID) {
+        Log.d(TAG, String.format("reloadContent(%d) started", articleID));
+
+        ArticleDao articleDao = getArticleDao();
+
+        Article article = getArticle(articleID, articleDao);
+        if(article == null) {
+            Log.w(TAG, "changeArticleTitle() article was not found");
+            return; // not an error?
+        }
+
+        ServiceHelper.reloadContent(context, article.getArticleId());
+
+        Log.d(TAG, "reloadContent() finished");
     }
 
     public static void setArticleProgress(Context context, int articleID, double progress) {

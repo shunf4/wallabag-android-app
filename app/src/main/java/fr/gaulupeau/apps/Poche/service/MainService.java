@@ -26,6 +26,7 @@ import fr.gaulupeau.apps.Poche.events.ActionResultEvent;
 import fr.gaulupeau.apps.Poche.events.LinkUploadedEvent;
 import fr.gaulupeau.apps.Poche.events.ArticlesChangedEvent;
 import fr.gaulupeau.apps.Poche.events.OfflineQueueChangedEvent;
+import fr.gaulupeau.apps.Poche.events.ReloadFinishedEvent;
 import fr.gaulupeau.apps.Poche.events.SweepDeletedArticlesFinishedEvent;
 import fr.gaulupeau.apps.Poche.events.SweepDeletedArticlesProgressEvent;
 import fr.gaulupeau.apps.Poche.events.SweepDeletedArticlesStartedEvent;
@@ -92,6 +93,16 @@ public class MainService extends IntentServiceBase {
                 }
                 break;
             }
+
+            case RELOAD_CONTENT: {
+                try {
+                    result = reloadContent(actionRequest);
+                } finally {
+                    if(result == null) result = new ActionResult(ActionResult.ErrorType.UNKNOWN);
+                }
+                break;
+            }
+
 
             case UPDATE_ARTICLES: {
                 UpdateArticlesStartedEvent startEvent = new UpdateArticlesStartedEvent(actionRequest);
@@ -400,6 +411,47 @@ public class MainService extends IntentServiceBase {
         }
 
         return null;
+    }
+
+    private ActionResult reloadContent(final ActionRequest actionRequest) {
+        int articleID = actionRequest.getArticleID();
+        Log.d(TAG, String.format("reloadContent(%d) started", articleID));
+
+        ActionResult result = new ActionResult();
+        ArticlesChangedEvent event = null;
+
+        if(WallabagConnection.isNetworkAvailable()) {
+            final Settings settings = getSettings();
+
+            try {
+                if (getWallabagServiceWrapper().getWallabagService().reloadArticle(articleID) == null) {
+                    Log.e(TAG, "reloadContent() server unable");
+                    result.setErrorType(ActionResult.ErrorType.SERVER_ERROR);
+                } else {
+                    event = new ArticlesChangedEvent();
+                }
+            } catch(UnsuccessfulResponseException | IOException e) {
+                ActionResult r = processException(e, "reloadContent()");
+                result.updateWith(r);
+            } catch(Exception e) {
+                Log.e(TAG, "reloadContent() exception", e);
+
+                result.setErrorType(ActionResult.ErrorType.UNKNOWN);
+                result.setMessage(e.toString());
+            }
+        } else {
+            result.setErrorType(ActionResult.ErrorType.NO_NETWORK);
+        }
+
+        if(event != null) {
+            postEvent(event);
+            postEvent(new ReloadFinishedEvent(true));
+        } else {
+            postEvent(new ReloadFinishedEvent(false));
+        }
+
+        Log.d(TAG, "reloadContent() finished");
+        return result;
     }
 
     private ActionResult updateArticles(final ActionRequest actionRequest) {

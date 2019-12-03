@@ -6,6 +6,8 @@
     <string name="add_to_favorites">Add to Favorites</string>
     <string name="remove_from_favorites">Remove from Favorites</string>
     <string name="menuShare">Share</string>
+    <string name="menuShareAsHTML">Share as HTML</string>
+    <string name="menuReload">Reload Content</string>
     <string name="menuNext">Next article</string>
     <string name="menuPrevious">Previous article</string>
     <string name="menuDelete">Delete</string>
@@ -33,6 +35,7 @@
     <string name="dialog_add_label">Add a new article</string>
     <string name="page_url">Page URL</string>
     <string name="share_article_title">Share article</string>
+    <string name="share_article_as_html_title">Share article as HTML</string>
     <string name="share_text_extra">" via @wallabagapp"</string>
     <string name="positive_answer">Yes</string>
     <string name="negative_answer">No</string>
@@ -318,4 +321,7 @@
     <string name="connectionWizard_summary_prev">Back</string>
     <string name="connectionWizard_summary_next">Save settings</string>
     <string name="remove_tag">Remove tag</string>
+
+    <string name="reloadFinished_succeed_toast">Reload Succeed. Refresh articles to resync.</string>
+    <string name="reloadFinished_fail_toast">Reload Fail</string>
 </resources>

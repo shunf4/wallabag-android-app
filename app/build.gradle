@@ -35,9 +35,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         debug {
-            applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
         }
     }
@@ -63,7 +63,6 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'org.greenrobot:greendao:3.2.2'
     annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.1.1'
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.2.2'
@@ -73,4 +72,8 @@ dependencies {
     implementation 'com.mikepenz:aboutlibraries:7.0.4'
     implementation 'com.github.di72nn.wallabag-api-wrapper:api-wrapper:bc22fca'
     implementation 'org.slf4j:slf4j-android:1.7.29'
+    implementation files('libs\\greendao-3.2.3-SNAPSHOT.jar')
+    implementation files('libs\\greendao-generator-3.2.3-SNAPSHOT.jar')
+    implementation files('libs\\greendao-api-3.2.3-SNAPSHOT.jar')
+
 }
