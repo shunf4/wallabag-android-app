@@ -28,13 +28,21 @@ public class AddUrlProxyActivity extends AppCompatActivity {
         Bundle extras = intent.getExtras();
 
         final String extraText = extras.getString(Intent.EXTRA_TEXT);
-        final String pageUrl;
+        String pageUrl = "";
 
         // Parsing string for urls.
         Matcher matcher;
+        matcher = Patterns.WEB_URL.matcher(extraText);
+        boolean hasMatch = false;
+        while (!matcher.hitEnd()) {
+            if (matcher.find()) {
+                hasMatch = true;
+                pageUrl = matcher.group();
+            }
+        }
         if(extraText != null && !extraText.isEmpty()
-                && (matcher = Patterns.WEB_URL.matcher(extraText)).find()) {
-            pageUrl = matcher.group();
+                && hasMatch) {
+            ;
         } else {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.d_add_fail_title)
