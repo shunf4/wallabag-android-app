@@ -1,5 +1,6 @@
 package fr.gaulupeau.apps.Poche.service;
 
+<<<<<<< HEAD
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Process;
@@ -549,6 +550,12 @@ public class MainService extends IntentServiceBase {
         }
 
         return updater;
+=======
+public class MainService extends TaskService {
+
+    public MainService() {
+        super(MainService.class.getSimpleName());
+>>>>>>> upstream/master
     }
 
 }

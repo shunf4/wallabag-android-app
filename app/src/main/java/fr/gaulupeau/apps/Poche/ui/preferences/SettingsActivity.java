@@ -5,12 +5,12 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import androidx.appcompat.app.AlertDialog;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,26 +18,33 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fr.gaulupeau.apps.InThePoche.R;
 import fr.gaulupeau.apps.Poche.App;
 import fr.gaulupeau.apps.Poche.data.DbConnection;
-import fr.gaulupeau.apps.Poche.data.OperationsHelper;
+import fr.gaulupeau.apps.Poche.data.PreferenceKeysMap;
+import fr.gaulupeau.apps.Poche.data.QueueHelper;
 import fr.gaulupeau.apps.Poche.data.Settings;
 import fr.gaulupeau.apps.Poche.data.StorageHelper;
+import fr.gaulupeau.apps.Poche.data.dao.entities.QueueItem;
 import fr.gaulupeau.apps.Poche.events.ArticlesChangedEvent;
 import fr.gaulupeau.apps.Poche.events.EventHelper;
 import fr.gaulupeau.apps.Poche.events.FeedsChangedEvent;
 import fr.gaulupeau.apps.Poche.network.ClientCredentials;
+import fr.gaulupeau.apps.Poche.network.WallabagConnection;
 import fr.gaulupeau.apps.Poche.network.WallabagWebService;
-import fr.gaulupeau.apps.Poche.network.WallabagServiceWrapper;
 import fr.gaulupeau.apps.Poche.network.tasks.TestApiAccessTask;
 import fr.gaulupeau.apps.Poche.service.AlarmHelper;
-import fr.gaulupeau.apps.Poche.service.ServiceHelper;
+import fr.gaulupeau.apps.Poche.service.OperationsHelper;
 import fr.gaulupeau.apps.Poche.ui.BaseActionBarActivity;
 import fr.gaulupeau.apps.Poche.ui.Themes;
+import fr.gaulupeau.apps.Poche.utils.LoggingUtils;
 
 public class SettingsActivity extends BaseActionBarActivity {
 
@@ -114,13 +121,16 @@ public class SettingsActivity extends BaseActionBarActivity {
 
             addPreferencesFromResource(R.xml.preferences);
 
-            settings = new Settings(App.getInstance());
+            settings = App.getSettings();
 
             setOnClickListener(R.string.pref_key_connection_wizard);
             setOnClickListener(R.string.pref_key_connection_autofill);
             setOnClickListener(R.string.pref_key_sync_syncTypes_description);
             setOnClickListener(R.string.pref_key_ui_disableTouch_keyCode);
             setOnClickListener(R.string.pref_key_misc_wipeDB);
+            setOnClickListener(R.string.pref_key_misc_localQueue_dumpToFile);
+            setOnClickListener(R.string.pref_key_misc_localQueue_removeFirstItem);
+            setOnClickListener(R.string.pref_key_misc_logging_logcatToFile);
 
             ListPreference themeListPreference = (ListPreference)findPreference(
                     getString(R.string.pref_key_ui_theme));
@@ -157,10 +167,10 @@ public class SettingsActivity extends BaseActionBarActivity {
                 });
             }
 
-            Preference handleHttpSchemePreference = findPreference(
+            CheckBoxPreference handleHttpSchemePreference = (CheckBoxPreference) findPreference(
                     getString(R.string.pref_key_misc_handleHttpScheme));
-            if(handleHttpSchemePreference != null) {
-                handleHttpSchemePreference.setDefaultValue(settings.isHandlingHttpScheme());
+            if (handleHttpSchemePreference != null) {
+                handleHttpSchemePreference.setChecked(settings.isHandlingHttpScheme());
                 handleHttpSchemePreference.setOnPreferenceChangeListener(this);
             }
 
@@ -311,8 +321,8 @@ public class SettingsActivity extends BaseActionBarActivity {
             if(serviceWrapperReinitializationNeeded) {
                 serviceWrapperReinitializationNeeded = false;
 
-                Log.i(TAG, "applyChanges() calling WallabagServiceWrapper.resetInstance()");
-                WallabagServiceWrapper.resetInstance();
+                Log.i(TAG, "applyChanges() calling WallabagConnection.resetWallabagService()");
+                WallabagConnection.resetWallabagService();
             }
 
             if(imageCachingChanged) {
@@ -321,7 +331,7 @@ public class SettingsActivity extends BaseActionBarActivity {
                 if(!oldImageCacheEnabled && settings.isImageCacheEnabled()
                         && settings.isFirstSyncDone()) {
                     Log.i(TAG, "applyChanges() image caching changed, starting image fetching");
-                    ServiceHelper.fetchImages(App.getInstance());
+                    OperationsHelper.fetchImages(App.getInstance());
                 }
             }
 
@@ -351,7 +361,7 @@ public class SettingsActivity extends BaseActionBarActivity {
             Log.d(TAG, String.format("onPreferenceChange(key: %s, newValue: %s)",
                     preference.getKey(), newValue));
 
-            int keyID = Settings.getPrefKeyIDByValue(preference.getKey());
+            int keyID = PreferenceKeysMap.getInstance().getPrefKeyId(preference);
             switch(keyID) {
                 case R.string.pref_key_misc_handleHttpScheme:
                     settings.setHandleHttpScheme((Boolean)newValue);
@@ -381,7 +391,7 @@ public class SettingsActivity extends BaseActionBarActivity {
 
             boolean themeChanged = false;
 
-            int keyResID = Settings.getPrefKeyIDByValue(key);
+            int keyResID = PreferenceKeysMap.getInstance().getPrefKeyIdByStringKey(key);
             switch(keyResID) {
                 case R.string.pref_key_ui_theme:
                     themeChanged = true;
@@ -449,7 +459,7 @@ public class SettingsActivity extends BaseActionBarActivity {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            switch(Settings.getPrefKeyIDByValue(preference.getKey())) {
+            switch (PreferenceKeysMap.getInstance().getPrefKeyId(preference)) {
                 case R.string.pref_key_connection_wizard: {
                     Activity activity = getActivity();
                     if(activity != null) {
@@ -491,7 +501,7 @@ public class SettingsActivity extends BaseActionBarActivity {
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        OperationsHelper.wipeDB(App.getInstance().getSettings());
+                                        OperationsHelper.wipeDB(App.getSettings());
                                     }
                                 })
                                 .setNegativeButton(R.string.negative_answer, null)
@@ -499,9 +509,90 @@ public class SettingsActivity extends BaseActionBarActivity {
                     }
                     return true;
                 }
+                case R.string.pref_key_misc_localQueue_dumpToFile: {
+                    dumpOfflineQueue();
+                    return true;
+                }
+                case R.string.pref_key_misc_localQueue_removeFirstItem: {
+                    removeFirstOfflineQueueItem();
+                    return true;
+                }
+                case R.string.pref_key_misc_logging_logcatToFile: {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        LoggingUtils.saveLogcatToFile(activity);
+                    }
+                    return true;
+                }
             }
 
             return false;
+        }
+
+        private void dumpOfflineQueue() {
+            Activity activity = getActivity();
+            if (activity == null) return;
+
+            QueueHelper queueHelper = new QueueHelper(DbConnection.getSession());
+            List<QueueItem> items = queueHelper.getQueueItems();
+            if (items.isEmpty()) {
+                Toast.makeText(activity, R.string.misc_localQueue_empty, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String string = getString(R.string.misc_localQueue_dumpToFile_header,
+                    getString(R.string.issues_url)) + "\r\n\r\n"
+                    + queueItemsToString(items);
+
+            try {
+                File file = StorageHelper.dumpQueueData(string);
+                Toast.makeText(activity, getString(R.string.misc_localQueue_dumpToFile_result_dumped,
+                        file.getAbsolutePath()), Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Log.w(TAG, "Error during dumping offline queue", e);
+                Toast.makeText(activity, getString(R.string.misc_localQueue_dumpToFile_result_error,
+                        e.toString()), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        private String queueItemsToString(List<QueueItem> items) {
+            String nl = "\r\n";
+            String delim = "; ";
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("id").append(delim)
+                    .append("action").append(delim)
+                    .append("articleId").append(delim)
+                    .append("localArticleId").append(delim)
+                    .append("extra").append(delim)
+                    .append("extra2").append(nl);
+
+            for (QueueItem item : items) {
+                sb.append(item.getId()).append(delim)
+                        .append(item.getAction()).append(delim)
+                        .append(item.getArticleId()).append(delim)
+                        .append(item.getLocalArticleId()).append(delim)
+                        .append(item.getExtra()).append(delim)
+                        .append(item.getExtra2()).append(nl);
+            }
+
+            return sb.toString();
+        }
+
+        private void removeFirstOfflineQueueItem() {
+            Activity activity = getActivity();
+            if (activity == null) return;
+
+            QueueHelper queueHelper = new QueueHelper(DbConnection.getSession());
+            List<QueueItem> items = queueHelper.getQueueItems();
+            if (items.isEmpty()) {
+                Toast.makeText(activity, R.string.misc_localQueue_empty, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            queueHelper.dequeueItems(Collections.singletonList(items.get(0)));
+            Toast.makeText(activity, R.string.misc_localQueue_removeFirstItem_done, Toast.LENGTH_SHORT).show();
         }
 
         private void showDisableTouchSetKeyCodeDialog() {

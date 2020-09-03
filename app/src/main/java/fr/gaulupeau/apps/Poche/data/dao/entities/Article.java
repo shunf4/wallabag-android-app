@@ -1,13 +1,19 @@
 package fr.gaulupeau.apps.Poche.data.dao.entities;
 
-import org.greenrobot.greendao.annotation.*;
+import android.database.sqlite.SQLiteBlobTooBigException;
+import android.util.Log;
 
 import java.util.Date;
 import java.util.List;
+
+import org.greenrobot.greendao.annotation.*;
 import org.greenrobot.greendao.DaoException;
+
 import fr.gaulupeau.apps.Poche.data.dao.DaoSession;
 import fr.gaulupeau.apps.Poche.data.dao.TagDao;
+import fr.gaulupeau.apps.Poche.data.dao.AnnotationDao;
 import fr.gaulupeau.apps.Poche.data.dao.ArticleDao;
+import fr.gaulupeau.apps.Poche.data.dao.ArticleContentDao;
 
 /**
  * Entity mapped to table "ARTICLE".
@@ -15,19 +21,24 @@ import fr.gaulupeau.apps.Poche.data.dao.ArticleDao;
 @Entity
 public class Article {
 
+    private static final String TAG = Article.class.getSimpleName();
+
     @Id
     private Long id;
 
     @Unique
     private Integer articleId;
 
-    private String content;
+    @Transient
+    private ArticleContent content;
 
     private String title;
 
     private String domain;
 
     private String url;
+
+    private String givenUrl;
 
     private String originUrl;
 
@@ -58,6 +69,9 @@ public class Article {
 
     private Boolean imagesDownloaded;
 
+    @Transient
+    private boolean contentTooBig;
+
     @ToMany
     @JoinEntity(
             entity = ArticleTagsJoin.class,
@@ -65,6 +79,9 @@ public class Article {
             targetProperty = "tagId"
     )
     private List<Tag> tags;
+
+    @ToMany(referencedJoinProperty = "articleId")
+    private List<Annotation> annotations;
 
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -81,18 +98,18 @@ public class Article {
         this.id = id;
     }
 
-    @Generated(hash = 180250343)
-    public Article(Long id, Integer articleId, String content, String title, String domain, String url,
-            String originUrl, int estimatedReadingTime, String language, String previewPictureURL,
-            String authors, Boolean favorite, Boolean archive, Date creationDate, Date updateDate,
-            Date publishedAt, Date starredAt, Boolean isPublic, String publicUid,
-            Double articleProgress, Boolean imagesDownloaded) {
+    @Generated(hash = 1498635781)
+    public Article(Long id, Integer articleId, String title, String domain, String url, String givenUrl,
+                   String originUrl, int estimatedReadingTime, String language, String previewPictureURL,
+                   String authors, Boolean favorite, Boolean archive, Date creationDate, Date updateDate,
+                   Date publishedAt, Date starredAt, Boolean isPublic, String publicUid,
+                   Double articleProgress, Boolean imagesDownloaded) {
         this.id = id;
         this.articleId = articleId;
-        this.content = content;
         this.title = title;
         this.domain = domain;
         this.url = url;
+        this.givenUrl = givenUrl;
         this.originUrl = originUrl;
         this.estimatedReadingTime = estimatedReadingTime;
         this.language = language;
@@ -127,11 +144,58 @@ public class Article {
     }
 
     public String getContent() {
-        return content;
+        ArticleContent articleContent = getArticleContent();
+
+        if (contentTooBig) return null;
+
+        return articleContent.getContent();
     }
 
     public void setContent(String content) {
-        this.content = content;
+        ArticleContent articleContent = getArticleContent();
+
+        if (contentTooBig) {
+            Log.w(TAG, "setContent() ignoring content change" +
+                    " because current content is too big to be loaded");
+            return;
+        }
+
+        articleContent.setContent(content);
+    }
+
+    public ArticleContent getArticleContent() {
+        ArticleContent content = this.content;
+        if (content == null && !contentTooBig) {
+            if (id == null) {
+                throw new IllegalStateException("Can't fetch content for a not persisted Article");
+            }
+
+            DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+
+            ArticleContentDao targetDao = daoSession.getArticleContentDao();
+            try {
+                this.content = content = targetDao.load(id);
+            } catch (SQLiteBlobTooBigException e) {
+                Log.w(TAG, "getArticleContent() content is too big", e);
+                contentTooBig = true;
+            }
+        }
+        return content;
+    }
+
+    public void setArticleContent(ArticleContent articleContent) {
+        this.content = articleContent;
+    }
+
+    public boolean isArticleContentLoaded() {
+        return content != null;
+    }
+
+    public boolean isContentTooBig() {
+        return contentTooBig;
     }
 
     public String getTitle() {
@@ -156,6 +220,14 @@ public class Article {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getGivenUrl() {
+        return givenUrl;
+    }
+
+    public void setGivenUrl(String givenUrl) {
+        this.givenUrl = givenUrl;
     }
 
     public String getOriginUrl() {
@@ -355,6 +427,48 @@ public class Article {
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getArticleDao() : null;
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 1777328383)
+    public List<Annotation> getAnnotations() {
+        if (annotations == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            AnnotationDao targetDao = daoSession.getAnnotationDao();
+            List<Annotation> annotationsNew = targetDao._queryArticle_Annotations(id);
+            synchronized (this) {
+                if (annotations == null) {
+                    annotations = annotationsNew;
+                }
+            }
+        }
+        return annotations;
+    }
+
+    public void setAnnotations(List<Annotation> annotations) {
+        this.annotations = annotations;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 2105118966)
+    public synchronized void resetAnnotations() {
+        annotations = null;
+    }
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "id=" + id +
+                ", articleId=" + articleId +
+                ", title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 
 }

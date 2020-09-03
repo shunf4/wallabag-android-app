@@ -3,9 +3,8 @@ package fr.gaulupeau.apps.Poche.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -13,8 +12,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+
 import org.greenrobot.greendao.query.LazyList;
 import org.greenrobot.greendao.query.QueryBuilder;
+import org.greenrobot.greendao.query.WhereCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,7 @@ import fr.gaulupeau.apps.Poche.data.ListAdapter;
 import fr.gaulupeau.apps.Poche.data.dao.ArticleDao;
 import fr.gaulupeau.apps.Poche.data.dao.ArticleTagsJoinDao;
 import fr.gaulupeau.apps.Poche.data.dao.DaoSession;
+import fr.gaulupeau.apps.Poche.data.dao.FtsDao;
 import fr.gaulupeau.apps.Poche.data.dao.TagDao;
 import fr.gaulupeau.apps.Poche.data.dao.entities.Article;
 import fr.gaulupeau.apps.Poche.data.dao.entities.ArticleTagsJoin;
@@ -36,7 +40,8 @@ import static fr.gaulupeau.apps.Poche.data.ListTypes.LIST_TYPE_ARCHIVED;
 import static fr.gaulupeau.apps.Poche.data.ListTypes.LIST_TYPE_FAVORITES;
 import static fr.gaulupeau.apps.Poche.data.ListTypes.LIST_TYPE_UNREAD;
 
-public class ArticleListFragment extends RecyclerViewListFragment<Article> {
+public class ArticleListFragment extends RecyclerViewListFragment<Article, ListAdapter>
+        implements ContextMenuItemHandler {
 
     public interface OnFragmentInteractionListener {
         void onRecyclerViewListSwipeUpdate();
@@ -51,6 +56,7 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
 
     private int listType;
     private String tagLabel;
+    private boolean untagged;
     private List<Long> tagIDs;
 
     private OnFragmentInteractionListener host;
@@ -76,7 +82,7 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Bundle arguments = getArguments();
-        if(arguments != null) {
+        if (arguments != null) {
             listType = arguments.getInt(LIST_TYPE_PARAM, LIST_TYPE_UNREAD);
             tagLabel = arguments.getString(TAG_PARAM);
         }
@@ -93,7 +99,7 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
         Log.v(TAG, "Fragment " + listType + " onCreateOptionsMenu()");
@@ -102,13 +108,13 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         Log.v(TAG, "Fragment " + listType + " onAttach()");
 
-        if(context instanceof OnFragmentInteractionListener) {
-            host = (OnFragmentInteractionListener)context;
+        if (context instanceof OnFragmentInteractionListener) {
+            host = (OnFragmentInteractionListener) context;
         }
     }
 
@@ -125,13 +131,17 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.v(TAG, "Fragment " + listType + " onOptionsItemSelected()");
 
-        switch(item.getItemId()) {
-            case R.id.menu_list_openRandomArticle:
-                openRandomArticle();
-                return true;
+        if (item.getItemId() == R.id.menu_list_openRandomArticle) {
+            openRandomArticle();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean handleContextItemSelected(Activity activity, MenuItem item) {
+        return listAdapter.handleContextItemSelected(activity, item);
     }
 
     public void forceContentUpdate() {
@@ -139,36 +149,28 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     }
 
     @Override
-    protected RecyclerView.Adapter getListAdapter(List<Article> list) {
-        return new ListAdapter(App.getInstance(), App.getInstance().getSettings(),
-                list, new ListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                if(position >= itemList.size() || position < 0) {
-                    Log.e(TAG, "Fragment.getListAdapter.onItemClick prevent ArrayIndexOutOfBoundsException position=" + position + ", itemList.size()=" + itemList.size());
-                }
-                else {
-                    Article article = itemList.get(position);
-                    openArticle(article.getId());
-                }
-            }
-        }, listType);
+    protected ListAdapter createListAdapter(List<Article> list) {
+        return new ListAdapter(App.getInstance(), App.getSettings(),
+                list, position -> openArticle(itemList.get(position).getId()), listType);
     }
 
     @Override
     protected void resetContent() {
-        if(tagLabel != null) {
+        untagged = false;
+        tagIDs = null;
+
+        if (getString(R.string.untagged).equals(tagLabel)) {
+            untagged = true;
+        } else if (tagLabel != null) {
             List<Tag> tags = tagDao.queryBuilder()
                     .where(TagDao.Properties.Label.eq(tagLabel))
                     .orderDesc(TagDao.Properties.Label)
                     .list();
 
             tagIDs = new ArrayList<>(tags.size());
-            for(Tag t: tags) {
+            for (Tag t : tags) {
                 tagIDs.add(t.getId());
             }
-        } else {
-            tagIDs = null;
         }
 
         super.resetContent();
@@ -181,23 +183,28 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
         QueryBuilder<Article> qb = getQueryBuilder()
                 .limit(PER_PAGE_LIMIT);
 
-        if(page > 0) {
+        if (page > 0) {
             qb.offset(PER_PAGE_LIMIT * page);
         }
 
-        return removeContent(detachObjects(qb.list()));
+        return detachObjects(qb.list());
     }
 
     private QueryBuilder<Article> getQueryBuilder() {
-        QueryBuilder<Article> qb = articleDao.queryBuilder();
+        QueryBuilder<Article> qb = articleDao.queryBuilder()
+                .where(ArticleDao.Properties.ArticleId.isNotNull());
 
-        if(tagIDs != null && !tagIDs.isEmpty()) {
+        if (untagged) {
+            qb.where(new WhereCondition.PropertyCondition(ArticleDao.Properties.Id, " NOT IN "
+                    + "(select " + ArticleTagsJoinDao.Properties.ArticleId.columnName
+                    + " from " + ArticleTagsJoinDao.TABLENAME + ")"));
+        } else if (tagIDs != null && !tagIDs.isEmpty()) {
             // TODO: try subquery
             qb.join(ArticleTagsJoin.class, ArticleTagsJoinDao.Properties.ArticleId)
                     .where(ArticleTagsJoinDao.Properties.TagId.in(tagIDs));
         }
 
-        switch(listType) {
+        switch (listType) {
             case LIST_TYPE_ARCHIVED:
                 qb.where(ArticleDao.Properties.Archive.eq(true));
                 break;
@@ -211,12 +218,12 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
                 break;
         }
 
-        if(!TextUtils.isEmpty(searchQuery)) {
-            qb.whereOr(ArticleDao.Properties.Title.like("%" + searchQuery + "%"),
-                    ArticleDao.Properties.Content.like("%" + searchQuery + "%"));
+        if (!TextUtils.isEmpty(searchQuery)) {
+            qb.where(new WhereCondition.PropertyCondition(ArticleDao.Properties.Id, " IN (" +
+                    FtsDao.getQueryString() + DatabaseUtils.sqlEscapeString(searchQuery) + ")"));
         }
 
-        switch(sortOrder) {
+        switch (sortOrder) {
             case ASC:
                 qb.orderAsc(ArticleDao.Properties.ArticleId);
                 break;
@@ -234,17 +241,8 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
 
     // removes articles from cache: necessary for DiffUtil to work
     private List<Article> detachObjects(List<Article> articles) {
-        for(Article article: articles) {
+        for (Article article : articles) {
             articleDao.detach(article);
-        }
-
-        return articles;
-    }
-
-    // removes content from article objects in order to free memory
-    private List<Article> removeContent(List<Article> articles) {
-        for(Article article: articles) {
-            article.setContent(null);
         }
 
         return articles;
@@ -254,7 +252,7 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     protected void onSwipeRefresh() {
         super.onSwipeRefresh();
 
-        if(host != null) host.onRecyclerViewListSwipeUpdate();
+        if (host != null) host.onRecyclerViewListSwipeUpdate();
     }
 
     @Override
@@ -265,7 +263,7 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     private void openRandomArticle() {
         LazyList<Article> articles = getQueryBuilder().listLazyUncached();
 
-        if(!articles.isEmpty()) {
+        if (!articles.isEmpty()) {
             long id = articles.get(new Random().nextInt(articles.size())).getId();
 
             openArticle(id);
@@ -279,11 +277,11 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
     // TODO: include more info (order, search query, tag)
     private void openArticle(long id) {
         Activity activity = getActivity();
-        if(activity != null) {
+        if (activity != null) {
             Intent intent = new Intent(activity, ReadArticleActivity.class);
             intent.putExtra(ReadArticleActivity.EXTRA_ID, id);
 
-            switch(listType) {
+            switch (listType) {
                 case LIST_TYPE_FAVORITES:
                     intent.putExtra(ReadArticleActivity.EXTRA_LIST_FAVORITES, true);
                     break;
@@ -329,7 +327,7 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article> {
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            if(forceContentUpdate) return false;
+            if (forceContentUpdate) return false;
 
             Article oldArticle = oldList.get(oldItemPosition);
             Article newArticle = newList.get(newItemPosition);

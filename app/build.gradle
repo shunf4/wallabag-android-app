@@ -8,8 +8,8 @@ android {
         applicationId "fr.gaulupeau.apps.InThePoche"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 219
-        versionName "2.3.0"
+        versionCode 226
+        versionName "2.4.0"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -53,24 +53,35 @@ android {
 }
 
 greendao {
-    schemaVersion 102
+    schemaVersion 108
     daoPackage 'fr.gaulupeau.apps.Poche.data.dao'
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.media:media:1.1.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+<<<<<<< HEAD
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
     annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.1.1'
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.2.2'
     implementation 'org.conscrypt:conscrypt-android:2.2.1'
+=======
+    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'org.greenrobot:greendao:3.3.0'
+    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.2.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.8.1'
+    implementation 'org.conscrypt:conscrypt-android:2.4.0'
+>>>>>>> upstream/master
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
-    implementation 'com.mikepenz:aboutlibraries:7.0.4'
-    implementation 'com.github.di72nn.wallabag-api-wrapper:api-wrapper:bc22fca'
+    implementation 'com.mikepenz:aboutlibraries:7.1.0'
+    implementation 'com.github.di72nn.wallabag-api-wrapper:api-wrapper:v2.0.0-beta.5'
     implementation 'org.slf4j:slf4j-android:1.7.30'
     implementation files('libs\\greendao-3.2.3-SNAPSHOT.jar')
     implementation files('libs\\greendao-generator-3.2.3-SNAPSHOT.jar')

@@ -11,11 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-
 import fr.gaulupeau.apps.InThePoche.R;
 import fr.gaulupeau.apps.Poche.App;
 import fr.gaulupeau.apps.Poche.network.ConnectivityChangeReceiver;
@@ -33,49 +28,11 @@ public class Settings {
 
     private static final int PREFERENCES_VERSION = 100;
 
-    private static Map<String, Integer> preferenceKeysMap;
-
     private Context context;
     private SharedPreferences pref;
 
-    public static void init(Context c) {
-        preferenceKeysMap = new HashMap<>();
-
-        try {
-            for(Field field: R.string.class.getDeclaredFields()) {
-                int modifiers = field.getModifiers();
-                if(Modifier.isStatic(modifiers)
-                        && !Modifier.isPrivate(modifiers)
-                        && field.getType().equals(int.class)) {
-                    try {
-                        if(field.getName().startsWith("pref_key_")) {
-                            int resID = field.getInt(null);
-                            addToMap(c, resID);
-                        }
-                    } catch(IllegalArgumentException | IllegalAccessException e) {
-                        Log.e(TAG, "init() exception", e);
-                    }
-                }
-            }
-        } catch(Exception e) {
-            Log.e(TAG, "init() exception", e);
-        }
-    }
-
-    public static int getPrefKeyIDByValue(String value) {
-        if(value == null || value.isEmpty()) return -1;
-
-        Integer id = preferenceKeysMap.get(value);
-
-        return id != null ? id : -1;
-    }
-
-    private static void addToMap(Context context, int resID) {
-        preferenceKeysMap.put(context.getString(resID), resID);
-    }
-
     public static boolean checkFirstRunInit(Context context) {
-        Settings settings = App.getInstance().getSettings();
+        Settings settings = App.getSettings();
 
         if(settings.isFirstRun()) {
             settings.setFirstRun(false);
@@ -128,9 +85,11 @@ public class Settings {
                 setFirstRun(false);
                 setConfigurationOk(false);
             } else { // preferences are not migrated -- set some default values
-                Themes.Theme theme = android.os.Build.MODEL.equals("NOOK")
-                        ? Themes.Theme.E_INK : Themes.Theme.LIGHT;
+                boolean isOnyxDevice = Build.MANUFACTURER.equals("Onyx");
+                boolean isEreader = isOnyxDevice || Build.MODEL.equals("NOOK");
+                Themes.Theme theme = isEreader ? Themes.Theme.E_INK : Themes.Theme.LIGHT;
                 prefEditor.putString(context.getString(R.string.pref_key_ui_theme), theme.toString());
+                prefEditor.putBoolean(context.getString(R.string.pref_key_ui_onyxworkaround_enabled), isOnyxDevice);
             }
 
             if(!contains(R.string.pref_key_tts_speed)) {
@@ -160,6 +119,14 @@ public class Settings {
 
     public boolean contains(int keyResourceID) {
         return contains(context.getString(keyResourceID));
+    }
+
+    public void remove(String key) {
+        pref.edit().remove(key).apply();
+    }
+
+    public void remove(int keyResourceID) {
+        remove(context.getString(keyResourceID));
     }
 
     public boolean getBoolean(String key, boolean defValue) {
@@ -306,6 +273,20 @@ public class Settings {
         setString(R.string.pref_key_connection_api_accessToken, apiAccessToken);
     }
 
+    public Long getApiAccessTokenExpirationDate() {
+        return contains(R.string.pref_key_connection_api_accessTokenExpirationDate)
+                ? getLong(R.string.pref_key_connection_api_accessTokenExpirationDate, 0)
+                : null;
+    }
+
+    public void setApiAccessTokenExpirationDate(Long timestamp) {
+        if (timestamp == null) {
+            remove(R.string.pref_key_connection_api_accessTokenExpirationDate);
+        } else {
+            setLong(R.string.pref_key_connection_api_accessTokenExpirationDate, timestamp);
+        }
+    }
+
     public String getHttpAuthUsername() {
         return getString(R.string.pref_key_connection_advanced_httpAuthUsername);
     }
@@ -352,6 +333,14 @@ public class Settings {
 
     public void setHandlePreformattedTextOption(String value) {
         setString(R.string.pref_key_ui_article_handlePreformattedText, value);
+    }
+
+    public boolean isShowArticleAddedDialog() {
+        return getBoolean(R.string.pref_key_ui_showArticleAddedDialog_enabled, true);
+    }
+
+    public void setShowArticleAddedDialog(boolean value) {
+        setBoolean(R.string.pref_key_ui_showArticleAddedDialog_enabled, value);
     }
 
     public boolean isFullscreenArticleView() {
@@ -453,6 +442,22 @@ public class Settings {
         setBoolean(R.string.pref_key_ui_previewImage_enabled, value);
     }
 
+    public boolean isAnnotationsEnabled() {
+        return getBoolean(R.string.pref_key_ui_annotations_enabled, false);
+    }
+
+    public void setAnnotationsEnabled(boolean value) {
+        setBoolean(R.string.pref_key_ui_annotations_enabled, value);
+    }
+
+    public boolean isOnyxWorkaroundEnabled() {
+        return getBoolean(R.string.pref_key_ui_onyxworkaround_enabled, false);
+    }
+
+    public void setOnyxWorkaroundEnabled(boolean value) {
+        setBoolean(R.string.pref_key_ui_onyxworkaround_enabled, value);
+    }
+
     public boolean isTapToScrollEnabled() {
         return getBoolean(R.string.pref_key_ui_tapToScroll_enabled, false);
     }
@@ -507,6 +512,46 @@ public class Settings {
 
     public void setScrolledOverBottom(int scrolls) {
         setInt(R.string.pref_key_ui_scrollOverBottom, scrolls);
+    }
+
+    public int getTtsFastForwardTime() {
+        return getInt(R.string.pref_key_tts_fastForwardTime, 30);
+    }
+
+    public void setTtsFastForwardTime(int value) {
+        setInt(R.string.pref_key_tts_fastForwardTime, value);
+    }
+
+    public int getTtsRewindTime() {
+        return getInt(R.string.pref_key_tts_rewindTime, 10);
+    }
+
+    public void setTtsRewindTime(int value) {
+        setInt(R.string.pref_key_tts_rewindTime, value);
+    }
+
+    public boolean isTtsNextButtonIsFastForward() {
+        return getBoolean(R.string.pref_key_tts_nextButtonIsFastForward, true);
+    }
+
+    public void setTtsNextButtonIsFastForward(boolean value) {
+        setBoolean(R.string.pref_key_tts_nextButtonIsFastForward, value);
+    }
+
+    public boolean isTtsPreviousButtonIsRewind() {
+        return getBoolean(R.string.pref_key_tts_previousButtonIsRewind, true);
+    }
+
+    public void setTtsPreviousButtonIsRewind(boolean value) {
+        setBoolean(R.string.pref_key_tts_previousButtonIsRewind, value);
+    }
+
+    public boolean isTtsUsePreviewAsAlbumArt() {
+        return getBoolean(R.string.pref_key_tts_usePreviewAsAlbumArt, true);
+    }
+
+    public void setTtsUsePreviewAsAlbumArt(boolean value) {
+        setBoolean(R.string.pref_key_tts_usePreviewAsAlbumArt, value);
     }
 
     public boolean isTtsVisible() {
@@ -619,14 +664,6 @@ public class Settings {
 
     public void setAutoSyncQueueEnabled(boolean value) {
         setBoolean(R.string.pref_key_autoSyncQueue_enabled, value);
-    }
-
-    public boolean isAutoDownloadNewArticlesEnabled() {
-        return getBoolean(R.string.pref_key_autoDlNew_enabled, false);
-    }
-
-    public void setAutoDownloadNewArticlesEnabled(boolean value) {
-        setBoolean(R.string.pref_key_autoDlNew_enabled, value);
     }
 
     public boolean isImageCacheEnabled() {

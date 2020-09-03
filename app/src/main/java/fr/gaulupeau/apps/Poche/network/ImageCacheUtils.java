@@ -53,6 +53,28 @@ public class ImageCacheUtils {
     private static OkHttpClient okHttpClient;
     private static String wallabagUrl;
 
+    public static File getCachedImageFile(String imageUrl, long articleId) {
+        if (!isExternalStorageReadable()) {
+            Log.w(TAG, "getCachedImageFile() extStorage path is not readable");
+            return null;
+        }
+
+        String extStorage = getExternalStoragePath();
+        String articleCachePath = getArticleCachePath(extStorage, articleId);
+        String localImagePath = getCacheImagePath(articleCachePath, imageUrl);
+        if (localImagePath == null) {
+            return null;
+        }
+
+        File image = new File(localImagePath);
+        if (!image.exists() || !image.canRead()) {
+            Log.d(TAG, "getCachedImageFile() file doesn't exist or isn't readable");
+            return null;
+        }
+
+        return image;
+    }
+
     public static String replaceImagesInHtmlContent(String htmlContent, long articleId) {
         String extStorage = getExternalStoragePath();
         if(!isExternalStorageReadable()) {
@@ -125,6 +147,21 @@ public class ImageCacheUtils {
         }
 
         return source.toString();
+    }
+
+    public static String replaceWallabagRelativeImgUrls(String content) {
+        List<String> imgURLs = findImageUrlsInHtml(content);
+        if (!imgURLs.isEmpty()) {
+            String wbgURL = getWallabagUrl();
+            for (String imageURL : imgURLs) {
+                if (imageURL.startsWith(WALLABAG_RELATIVE_URL_PATH)) {
+                    content = content.replace(imageURL, wbgURL + imageURL);
+                    Log.d(TAG, "replaceWallabagRelativeImgUrls() prefixing wallabag server URL "
+                            + wbgURL + " to the image path " + imageURL);
+                }
+            }
+        }
+        return content;
     }
 
     public static boolean cacheImages(long articleId, String articleContent) {
@@ -304,7 +341,7 @@ public class ImageCacheUtils {
 
     public static String getWallabagUrl() {
         if(wallabagUrl == null) {
-            wallabagUrl = App.getInstance().getSettings().getUrl();
+            wallabagUrl = App.getSettings().getUrl();
         }
 
         return wallabagUrl;

@@ -1,191 +1,127 @@
 package fr.gaulupeau.apps.Poche.service;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 
-import com.di72nn.stuff.wallabag.apiwrapper.WallabagService;
+import androidx.core.util.Consumer;
 
-import java.util.Collection;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
-import fr.gaulupeau.apps.Poche.data.Settings;
-import fr.gaulupeau.apps.Poche.data.dao.entities.QueueItem;
-import fr.gaulupeau.apps.Poche.network.Updater;
+import fr.gaulupeau.apps.Poche.service.tasks.ActionRequestTask;
+import fr.gaulupeau.apps.Poche.service.tasks.DownloadArticleAsFileTask;
+import fr.gaulupeau.apps.Poche.service.tasks.FetchArticleImagesTask;
+import fr.gaulupeau.apps.Poche.service.tasks.SimpleTask;
+import fr.gaulupeau.apps.Poche.service.tasks.SweepDeletedArticlesTask;
+import fr.gaulupeau.apps.Poche.service.tasks.SyncOfflineChangesTask;
+import fr.gaulupeau.apps.Poche.service.tasks.UpdateArticlesTask;
 
 public class ServiceHelper {
 
     private static final String TAG = ServiceHelper.class.getSimpleName();
 
-    public static void addLink(Context context, String link) {
-        addLink(context, link, null);
-    }
+    public static void startService(Context context, ActionRequest request) {
+        ActionRequestTask task;
+        boolean mainService = false;
 
-    private static void addLink(Context context, String link, Long operationID) {
-        Log.d(TAG, "addLink() started");
+        switch (request.getAction()) {
+            case SYNC_QUEUE:
+                task = new SyncOfflineChangesTask(request);
+                mainService = true;
+                break;
 
-        ActionRequest request = new ActionRequest(ActionRequest.Action.ADD_LINK);
-        request.setExtra(link);
-        request.setOperationID(operationID);
+            case UPDATE_ARTICLES:
+                task = new UpdateArticlesTask(request);
+                mainService = true;
+                break;
 
-        startService(context, request);
-    }
+            case SWEEP_DELETED_ARTICLES:
+                task = new SweepDeletedArticlesTask(request);
+                mainService = true;
+                break;
 
-    public static void archiveArticle(Context context, int articleID) {
-        changeArticle(context, articleID, QueueItem.ArticleChangeType.ARCHIVE);
-    }
+            case FETCH_IMAGES:
+                task = new FetchArticleImagesTask(request);
+                break;
 
-    public static void favoriteArticle(Context context, int articleID) {
-        changeArticle(context, articleID, QueueItem.ArticleChangeType.FAVORITE);
-    }
+            case DOWNLOAD_AS_FILE:
+                task = new DownloadArticleAsFileTask(request);
+                break;
 
-    public static void changeArticleTitle(Context context, int articleID) {
-        changeArticle(context, articleID, QueueItem.ArticleChangeType.TITLE);
-    }
-
-    public static void changeArticleTags(Context context, int articleID) {
-        changeArticle(context, articleID, QueueItem.ArticleChangeType.TAGS);
-    }
-
-    public static void deleteTagsFromArticle(Context context, int articleID,
-                                             Collection<String> tags) {
-        Log.d(TAG, "deleteTagsFromArticle() started");
-
-        ActionRequest request = new ActionRequest(ActionRequest.Action.ARTICLE_TAGS_DELETE);
-        request.setArticleID(articleID);
-        request.setExtra(TextUtils.join(QueueItem.DELETED_TAGS_DELIMITER, tags));
-
-        startService(context, request);
-    }
-
-    public static void deleteArticle(Context context, int articleID) {
-        Log.d(TAG, "deleteArticle() started");
-
-        ActionRequest request = new ActionRequest(ActionRequest.Action.ARTICLE_DELETE);
-        request.setArticleID(articleID);
-
-        startService(context, request);
-    }
-
-    public static void syncAndUpdate(Context context, Settings settings,
-                                     Updater.UpdateType updateType, boolean auto) {
-        syncAndUpdate(context, settings, updateType, auto, null);
-    }
-
-    private static void syncAndUpdate(Context context, Settings settings,
-                                      Updater.UpdateType updateType,
-                                      boolean auto, Long operationID) {
-        Log.d(TAG, "syncAndUpdate() started");
-
-        if(settings != null && settings.isOfflineQueuePending()) {
-            Log.d(TAG, "syncAndUpdate() running sync and update");
-
-            ActionRequest syncRequest = getSyncQueueRequest(auto, false);
-            syncRequest.setNextRequest(getUpdateArticlesRequest(settings, updateType, auto, operationID));
-
-            startService(context, syncRequest);
-        } else {
-            updateArticles(context, settings, updateType, auto, operationID);
-        }
-    }
-
-    public static void syncQueue(Context context) {
-        syncQueue(context, false, false);
-    }
-
-    public static void syncQueue(Context context, boolean auto) {
-        syncQueue(context, auto, false);
-    }
-
-    public static void syncQueue(Context context, boolean auto, boolean byOperation) {
-        Log.d(TAG, "syncQueue() started");
-
-        startService(context, getSyncQueueRequest(auto, byOperation));
-    }
-
-    private static ActionRequest getSyncQueueRequest(boolean auto, boolean byOperation) {
-        ActionRequest request = new ActionRequest(ActionRequest.Action.SYNC_QUEUE);
-        if(auto) request.setRequestType(ActionRequest.RequestType.AUTO);
-        else if(byOperation) request.setRequestType(ActionRequest.RequestType.MANUAL_BY_OPERATION);
-
-        return request;
-    }
-
-    public static void updateArticles(Context context, Settings settings,
-                                      Updater.UpdateType updateType,
-                                      boolean auto, Long operationID) {
-        Log.d(TAG, "updateArticles() started");
-
-        startService(context, getUpdateArticlesRequest(settings, updateType, auto, operationID));
-    }
-
-    private static ActionRequest getUpdateArticlesRequest(Settings settings,
-                                                          Updater.UpdateType updateType,
-                                                          boolean auto, Long operationID) {
-        ActionRequest request = new ActionRequest(ActionRequest.Action.UPDATE_ARTICLES);
-        request.setUpdateType(updateType);
-        request.setOperationID(operationID);
-        if(auto) request.setRequestType(ActionRequest.RequestType.AUTO);
-
-        if(updateType == Updater.UpdateType.FAST && settings.isSweepingAfterFastSyncEnabled()) {
-            request.setNextRequest(getSweepDeletedArticlesRequest(auto, operationID));
+            default:
+                throw new RuntimeException("Action is not implemented: " + request.getAction());
         }
 
-        if(settings.isImageCacheEnabled()) {
-            addNextRequest(request, getFetchImagesRequest());
-        }
-
-        return request;
+        enqueueSimpleServiceTask(context, mainService ? MainService.class : SecondaryService.class, task);
     }
 
-    public static void sweepDeletedArticles(Context context) {
-        Log.d(TAG, "sweepDeletedArticles() started");
-
-        startService(context, getSweepDeletedArticlesRequest(false, null));
+    public static void enqueueSimpleServiceTask(Context context, SimpleTask task) {
+        enqueueSimpleServiceTask(context, MainService.class, task);
     }
 
-    private static ActionRequest getSweepDeletedArticlesRequest(boolean auto, Long operationID) {
-        ActionRequest request = new ActionRequest(ActionRequest.Action.SWEEP_DELETED_ARTICLES);
-        request.setOperationID(operationID);
-        if(auto) request.setRequestType(ActionRequest.RequestType.AUTO);
-
-        return request;
+    public static void enqueueSimpleServiceTask(Context context,
+                                                Class<? extends TaskService> serviceClass,
+                                                SimpleTask task) {
+        context.startService(TaskService.newSimpleTaskIntent(context, serviceClass, task));
     }
 
-    public static void downloadArticleAsFile(Context context, int articleID,
-                                             WallabagService.ResponseFormat downloadFormat,
-                                             Long operationID) {
-        Log.d(TAG, "downloadArticleAsFile() started; download format: " + downloadFormat);
-
-        ActionRequest request = new ActionRequest(ActionRequest.Action.DOWNLOAD_AS_FILE);
-        request.setArticleID(articleID);
-        request.setDownloadFormat(downloadFormat);
-        request.setOperationID(operationID);
-
-        startService(context, request);
+    public static void enqueueServiceTask(Context context, ParameterizedRunnable task,
+                                          Runnable postCallCallback) {
+        enqueueServiceTask(context, MainService.class, task, postCallCallback);
     }
 
-    public static void fetchImages(Context context) {
-        Log.d(TAG, "fetchImages() started");
-
-        startService(context, getFetchImagesRequest());
+    public static <V> Future<V> submitServiceCallableTask(Context context,
+                                                          ParameterizedCallable<V> task,
+                                                          Runnable postCallCallback) {
+        return submit(context, MainService.class, task, postCallCallback);
     }
 
-    private static ActionRequest getFetchImagesRequest() {
-        return new ActionRequest(ActionRequest.Action.FETCH_IMAGES);
+    public static Future<?> submitServiceTask(Context context, ParameterizedRunnable task,
+                                              Runnable postCallCallback) {
+        return submit(context, MainService.class, task, postCallCallback);
     }
 
-    private static void changeArticle(Context context, int articleID,
-                                      QueueItem.ArticleChangeType articleChangeType) {
-        Log.d(TAG, "changeArticle() started; articleChangeType: " + articleChangeType);
+    public static <V> Future<V> submit(Context context,
+                                       Class<? extends TaskService> serviceClass,
+                                       ParameterizedCallable<V> callable,
+                                       Runnable postCallCallback) {
+        CallableParameterizedAdapter<V> parameterizedCallable
+                = new CallableParameterizedAdapter<>(callable);
+        FutureTask<V> future = new FutureTask<>(parameterizedCallable);
 
-        ActionRequest request = new ActionRequest(ActionRequest.Action.ARTICLE_CHANGE);
-        request.setArticleID(articleID);
-        request.setArticleChangeType(articleChangeType);
+        enqueueServiceTask(context, serviceClass, future, parameterizedCallable, postCallCallback);
 
-        startService(context, request);
+        return future;
     }
 
+    public static Future<?> submit(Context context,
+                                   Class<? extends TaskService> serviceClass,
+                                   ParameterizedRunnable runnable,
+                                   Runnable postCallCallback) {
+        RunnableParameterizedAdapter parameterizedRunnable
+                = new RunnableParameterizedAdapter(runnable);
+        FutureTask<?> future = new FutureTask<>(parameterizedRunnable, null);
+
+        enqueueServiceTask(context, serviceClass, future, parameterizedRunnable, postCallCallback);
+
+        return future;
+    }
+
+    private static void enqueueServiceTask(Context context,
+                                           Class<? extends TaskService> serviceClass,
+                                           Runnable runnable, Parameterized parameterized,
+                                           Runnable postCallCallback) {
+        enqueueServiceTask(context, serviceClass,
+                new ParameterizedRunnableAdapter(runnable, parameterized),
+                postCallCallback);
+    }
+
+<<<<<<< HEAD
     public static void reloadContent(Context context, int articleID) {
         Log.d(TAG, "reloadContent() started");
 
@@ -218,17 +154,58 @@ public class ServiceHelper {
             case DOWNLOAD_AS_FILE:
                 startService(context, request, false);
                 break;
-
-            default:
-                throw new IllegalStateException("Action is not implemented: " + request.getAction());
-        }
+=======
+    public static void enqueueServiceTask(Context context,
+                                          Class<? extends TaskService> serviceClass,
+                                          ParameterizedRunnable task,
+                                          Runnable postCallCallback) {
+        performBoundServiceCall(context, serviceClass, binder -> {
+            TaskService.TaskServiceBinder service = (TaskService.TaskServiceBinder) binder;
+            service.enqueue(task);
+        }, postCallCallback);
     }
 
-    private static void startService(Context context, ActionRequest request, boolean mainService) {
-        Intent intent = new Intent(context, mainService ? MainService.class : SecondaryService.class);
-        intent.putExtra(ActionRequest.ACTION_REQUEST, request);
+    public static void performBoundServiceCall(Context context,
+                                               Class<?> serviceClass,
+                                               Consumer<IBinder> action,
+                                               Runnable postCallCallback) {
+        Log.d(TAG, "performBoundServiceCall() started");
+>>>>>>> upstream/master
 
-        context.startService(intent);
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d(TAG, "onServiceConnected() name=" + name);
+
+                try {
+                    Log.v(TAG, "onServiceConnected() executing action");
+                    action.accept(service);
+                    Log.v(TAG, "onServiceConnected() finished executing action");
+                } catch (Exception e) {
+                    Log.w(TAG, "onServiceConnected() exception", e);
+                    throw e; // ignore?
+                } finally {
+                    Log.v(TAG, "onServiceConnected() unbinding service");
+                    context.unbindService(this);
+                    Log.v(TAG, "onServiceConnected() posting postCallCallback");
+                    if (postCallCallback != null) {
+                        new Handler(context.getMainLooper()).post(postCallCallback);
+                    }
+                }
+                Log.v(TAG, "onServiceConnected() finished");
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "onServiceDisconnected() name=" + name);
+            }
+        };
+
+        Log.d(TAG, "performBoundServiceCall() binding service");
+        Intent serviceIntent = new Intent(context, serviceClass);
+        context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        Log.d(TAG, "performBoundServiceCall() finished");
     }
 
 }

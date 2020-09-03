@@ -135,8 +135,8 @@
     <string name="d_testConnection_urlSuggestion_acceptButton">Nutze Empfehlung</string>
     <string name="d_testConnection_urlSuggestion_cancelButton">Abbrechen</string>
     <string name="d_testConnection_urlSuggestion_declineButton">Nutze eigene</string>
-    <string name="d_testConnection_urlSuggestion_message">Es ist empfohlen, die URL zu \"%s\" zu ändern. Aber du kannst auch die eingegebene verwenden.</string>
-    <string name="d_testConnection_urlSuggestion_message_mandatory">Es ist empfohlen, die URL zu \"%s\" zu ändern</string>
+    <string name="d_testConnection_urlSuggestion_message">Es ist empfohlen, die URL zu „%s“ zu ändern. Aber du kannst auch die eingegebene verwenden.</string>
+    <string name="d_testConnection_urlSuggestion_message_mandatory">Es ist empfohlen, die URL zu „%s“ zu ändern</string>
     <string name="d_testConnection_urlSuggestion_title">Erwäge, die URL zu ändern</string>
     <string name="menu_syncLocalChanges">Synchronisiere lokale Änderungen</string>
     <string name="notification_expandedError">Fehler: %s</string>
@@ -149,12 +149,10 @@
     <string name="pref_categoryName_connection_advanced">Erweiterte Verbindungseinstellungen</string>
     <string name="pref_categoryName_miscellaneous">Sonstiges</string>
     <string name="pref_categoryName_ui">Benutzeroberfläche</string>
-    <string name="pref_desc_autoDlNew_enabled">Lade neue Artikel automatisch herunter sobald sie mit der App hinzugefügt wurden. Beachte: Der Download findet nicht statt, wenn du ausstehende unsynchronisierte Änderungen hast.</string>
     <string name="pref_desc_autoSyncQueue_enabled">Dies erlaubt, lokale Änderungen (hinzugefügte Links, archivierte Artikel, etc.) mit dem Server zu synchronisieren, sobald die Internetverbindung verfügbar wird.</string>
     <string name="pref_desc_autoSync_enabled">Dies erlaubt lokale Änderungen zu synchronisieren (hinzugefügte Links, archivierte Artikel, etc.) und lädt neue Artikel basierend auf einem Zeitplan herunter</string>
     <string name="pref_desc_misc_wipeDB">Löscht alle Artikel vom Gerät, löscht auch alle nicht synchronisierten lokalen Änderungen und URLs</string>
     <string name="pref_desc_runConnectionWizard">Hilft dir die grundlegenden Verbindungsdaten einzurichten</string>
-    <string name="pref_name_autoDlNew_enabled">Download neu hinzugefügter Artikel</string>
     <string name="pref_name_autoSync_enabled">Aktiviere automatische Synchronisation</string>
     <string name="pref_name_autoSync_interval">Zeitintervall für automatische Synchronisation</string>
     <string name="pref_name_autoSync_type">Art der automatischen Synchronisation</string>
@@ -182,7 +180,7 @@
     <string name="pref_desc_ui_tapToScroll_enabled">Scrolle den Bildschirm durch Antippen der linken und rechten Bildschirmseite</string>
     <string name="pref_name_ui_screenScrolling_percent">Prozentsatz der Bildschirmhöhe, um zu scrollen</string>
     <string name="pref_name_ui_screenScrolling_smooth">Nutze sanftes Scrollen</string>
-    <string name="connectionWizard_misc_incorrectConnectionURI">Falsche Verbindungs-URL genutzt</string>
+    <string name="connectionWizard_misc_incorrectConnectionURI">Falsche Webadresse benutzt</string>
     <string name="notification_downloadingImages">Bilder herunterladen</string>
     <string name="menu_lists_search">Suchen</string>
     <string name="menu_lists_changeSortOrder">Ändere Sortierung</string>
@@ -242,13 +240,13 @@
     <string name="pref_categoryName_sync">Synchronisierung</string>
     <string name="pref_name_sync_syncTypes">Synchronisationsarten</string>
     <string name="pref_desc_sync_syncTypes">Drücke hier, um mehr Info über die Synchronisierungsarten zu zeigen</string>
-    <string name="pref_desc_sync_syncTypes_text">Es gibt zwei Arten der Synchronisation: \"Vollständig\" und \"Schnell\".\n\n
-        \"Vollständig\" löscht alle lokalen Inhalte und lädt sie erneut herunter. Diese Art der Synchronisierung ist im Menü \"Optionen\" verfügbar. Es wird empfohlen, diese Option nur als letzten Ausweg zu verwenden.\n\n
-        \"Schnell\" (inkrementelle Synchronisierung) lädt nur Änderungen seit der letzten Synchronisierung herunter, die in der Regel deutlich weniger Zeit dauert und Internet-Verkehr verbraucht. Diese Methode hat jedoch ein Manko: Es kann nicht durch andere Applikationen gelöschte Artikel erkennen (also werden keine lokalen Artikel während der schnellen Synchronisation gelöscht). Diese Art der Synchronisierung wird mit einer Ziehen-und-Loslassen Geste in der Artikelliste gestartet.\n\n
-        Um das Manko des Synchronisierungstyps \"Schnell\" zu beheben gibt es eine Option zum Ausführen von \"gelöschte Artikel aussortieren\", die durch alle lokalen Artikel durchgeht und den Server fragt, ob der Artikel auf dem Server noch vorhanden ist - wenn nicht, wird der lokale Artikel entfernt. Abhängig von der Anzahl der Artikel, die du hast, kann dieser Vorgang einige Zeit dauern, aber es spart eine Menge des Internetverkehrs im Vergleich zur vollständigen Synchronisierung.\n\n
+    <string name="pref_desc_sync_syncTypes_text">Es gibt zwei Arten der Synchronisation: „Vollständig“ und „Schnell“.\n\n
+        „Vollständig“ löscht alle lokalen Inhalte und lädt sie erneut herunter. Diese Art der Synchronisierung ist im Menü „Optionen“ verfügbar. Es wird empfohlen, diese Option nur als letzten Ausweg zu verwenden.\n\n
+        „Schnell“ (inkrementelle Synchronisierung) lädt nur Änderungen seit der letzten Synchronisierung herunter, die in der Regel deutlich weniger Zeit dauert und Internet-Verkehr verbraucht. Diese Methode hat jedoch ein Manko: Es kann nicht durch andere Applikationen gelöschte Artikel erkennen (also werden keine lokalen Artikel während der schnellen Synchronisation gelöscht). Diese Art der Synchronisierung wird mit einer Ziehen-und-Loslassen Geste in der Artikelliste gestartet.\n\n
+        Um das Manko des Synchronisierungstyps „Schnell“ zu beheben gibt es eine Option zum Ausführen von „gelöschte Artikel aussortieren“, die durch alle lokalen Artikel durchgeht und den Server fragt, ob der Artikel auf dem Server noch vorhanden ist - wenn nicht, wird der lokale Artikel entfernt. Abhängig von der Anzahl der Artikel, die du hast, kann dieser Vorgang einige Zeit dauern, aber es spart eine Menge des Internetverkehrs im Vergleich zur vollständigen Synchronisierung.\n\n
         Keine dieser Funktionen beeinflusst die Client-zum-Server-Synchronisierung: Deine lokalen Änderungen werden immer an den Server gesendet, bevor die lokalen Inhalte aktualisiert werden.
     </string>
-    <string name="pref_name_sync_sweepingAfterFastSync_enabled">Aktiviert \"gelöschte Artikel aussortieren\" nach schneller Synchronisierung</string>
+    <string name="pref_name_sync_sweepingAfterFastSync_enabled">Aktiviert „gelöschte Artikel aussortieren“ nach schneller Synchronisierung</string>
     <string name="pref_desc_sync_sweepingAfterFastSync_enabled">Lies die Synchronisierungsartenbeschreibung oben für weitere Informationen</string>
     <string name="pref_name_autoSync_onStartup_enabled">Aktiviert die automatische Synchronisierung beim Start der Anwendung</string>
     <string name="pref_decs_autoSync_onStartup_enabled">Die App synchronisiert sich mit dem Server, wenn sie geöffnet wird</string>
@@ -274,7 +272,7 @@
     <string name="pref_name_storage_dbPath_externalStorage">Externer Speicher</string>
     <string name="pref_name_storage_dbPath_dbMoved">Datenbank verschoben</string>
     <string name="pref_name_misc_appendWallabagMention">Hänge wallabag Erwähnung an</string>
-    <string name="pref_desc_misc_appendWallabagMention">Hänge \"via @wallabagapp\" an geteilte Text an</string>
+    <string name="pref_desc_misc_appendWallabagMention">Hänge „via @wallabagapp“ an geteilte Text an</string>
     <string name="remove_tag">Tag entfernen</string>
     <string name="scrolledOverBottom">Noch %d mal über den Rand hinaus scrollen, um den Artikel als gelesen zu markieren</string>
     <string name="markedAsRead">Artikel als gelesen markiert</string>
@@ -284,7 +282,7 @@
     <string name="pref_desc_ui_swipeArticles">Hier klicken, um durch Wischen innerhalb eines Artikels zum vorherigen/nächsten Artikel zu wechseln</string>
     <string name="pref_name_ui_article_fullscreen">Vollbildansicht für Artikel</string>
     <string name="pref_desc_ui_article_fullscreen">Versteckt die System- und App-Leiste während des Artikellesens</string>
-    <string name="themeName_eink">Für E-Ink Displays</string>
+    <string name="themeName_eink">Für E-Papier-Anzeige</string>
     <string name="notification_channel_group_name_tts">TTS</string>
     <string name="notification_channel_group_name_sync">Synchronisierung</string>
     <string name="notification_channel_group_name_other">Sonstige</string>
@@ -294,4 +292,58 @@
     <string name="notification_channel_name_error">Fehler</string>
     <string name="pref_name_ui_previewImage_enabled">Vorschaubild</string>
     <string name="pref_desc_ui_previewImage_enabled">Zeige das Vorschaubild vor dem Artikeltext an</string>
+    <string name="notification_stacktrace">Stacktrace:</string>
+    <string name="notification_copyToClipboard">In Zwischenablage kopieren</string>
+    <string name="notification_clipboardLabel">Fehlerdetails</string>
+    <string name="copiedToClipboard">In Zwischenablage kopiert</string>
+    <string name="connectionWizard_misc_scanQrCode">Scanne einen QR-Code</string>
+    <string name="connectionWizard_misc_installQrCodeScanner">Bitte installieren einen QR-Codescanner</string>
+    <string name="pref_categoryName_misc_localQueue">Lokale Änderungen</string>
+    <string name="pref_name_misc_localQueue_notice">WARNUNG</string>
+    <string name="pref_desc_misc_localQueue_notice">Tu hier nichts bevor du nicht weißt, was du hier tust</string>
+    <string name="pref_name_misc_localQueue_dumpToFile">In eine Datei schreiben</string>
+    <string name="pref_desc_misc_localQueue_dumpToFile">Schreibt alle lokalen Änderungen in eine txt-Datei (du kannst diese anschauen oder zu einem Fehlerbericht hinzufügen)</string>
+    <string name="pref_name_misc_localQueue_removeFirstItem">Entferne ersten lokalen Eintrag der Wartschlange</string>
+    <string name="pref_desc_misc_localQueue_removeFirstItem">Entfernt den ersten nicht synchronisierten Eintrag. Es könnte helfen, wenn du wiederholende Fehlerbenachrichtigungen beim Synchronisieren bekommst. Vergiss nicht, vorher alle lokalen Änderungen in eine Datei zu schreiben</string>
+    <string name="misc_localQueue_empty">Keine lokalen Änderungen</string>
+    <string name="misc_localQueue_removeFirstItem_done">Fertig</string>
+    <string name="misc_localQueue_dumpToFile_result_dumped">Geschrieben in %s</string>
+    <string name="misc_localQueue_dumpToFile_result_error">Fehler: %s</string>
+    <string name="misc_localQueue_dumpToFile_header">Wenn du Probleme beim Synchronisieren hast, erstelle bitte einen Fehlerbericht hier: %s</string>
+    <string name="menu_annotate">Anmerkung erstellen</string>
+    <string name="pref_desc_ui_annotations_enabled">Experimentelle Funktion! Anmerkungen anzeigen, bearbeiten und erstellen</string>
+    <string name="pref_name_ui_annotations_enabled">Unterstützung von Anmerkungen</string>
+    <string name="notification_action_media_next">Nächster</string>
+    <string name="notification_action_media_fastforward">Vorspulen</string>
+    <string name="notification_action_media_play">Abspielen</string>
+    <string name="notification_action_media_pause">Pause</string>
+    <string name="notification_action_media_rewind">Zurückspulen</string>
+    <string name="tts_image">Bild: %s</string>
+    <string name="articleContent_previewImageAltText">Vorschaubild</string>
+    <string name="articleContent_globeIconAltText">Globussymbol</string>
+    <string name="contentIsTooLong">Der Artikelinhalt ist zu lang, um dargestellt zu werden</string>
+    <string name="untagged">&lt;nicht getaggt&gt;</string>
+    <string name="title">Titel</string>
+    <string name="articleEdit_openArticle">Artikel öffnen</string>
+    <string name="pref_name_tts_showPreviewAsAlbumArt">Nutze Vorschau als Albumgrafik</string>
+    <string name="pref_desc_tts_showPreviewAsAlbumArt">Nutze das Artikelvorschaubild (wenn es eines gibt) als Albumgrafik (sichtbar in Benachrichtigungen und vielleicht im Sperrbildschirm als Hintergrund)</string>
+    <string name="pref_desc_tts_previousButtonIsRewind">Das Drücken des Zurück-Buttons spult zurück anstatt zum vorigen Artikel zu springen</string>
+    <string name="pref_name_tts_previousButtonIsRewind">Zurück-Button spult zurück</string>
+    <string name="pref_desc_tts_nextButtonIsFastForward">Das Drücken des Weiter-Button spult vor anstatt zum nächsten Artikel zu springen</string>
+    <string name="pref_name_tts_nextButtonIsFastForward">Weiter-Button spult vor</string>
+    <string name="pref_desc_tts_rewindTime">Die Zahl der Sekunden, die zurückgespult wurde, wenn der Zurückspulen-Button gedrückt wurde</string>
+    <string name="pref_name_tts_rewindTime">Zurückspulzeit</string>
+    <string name="pref_name_tts_fastForwardTime">Schnellvorlaufzeit</string>
+    <string name="pref_desc_tts_fastForwardTime">Die Zahl der Sekunden, die vorgespult werden soll, wenn der Schnellvorlauf-Button gedrückt wurde</string>
+    <string name="pref_categoryName_tts">Text zu Sprache</string>
+    <string name="pref_desc_ui_onyxworkaround_enabled">Aktiviert die Zwischenlösung für Onyx-Geräte, die die Farbe schwarz für Links erzwingen</string>
+    <string name="pref_name_ui_onyxworkaround_enabled">Aktiviere für Onyx Boox die Notlösung für Probleme mit dem Design</string>
+    <string name="pref_desc_ui_showArticleAddedDialog">Zeigt einen Dialog, der es ermöglicht neu hinzugefügte Artikel zu favorisieren, archivieren oder zu verschlagworten. Wenn die Option deaktiviert ist, wird eine kurze Benachrichtung angezeigt.</string>
+    <string name="pref_name_ui_showArticleAddedDialog">Zeige einen Dialog beim Hinzufügen von Artikeln</string>
+    <string name="misc_logging_logcatToFile_result_error">Fehler: %s</string>
+    <string name="misc_logging_logcatToFile_result_saved">Log gespeichert unter %s</string>
+    <string name="pref_desc_misc_logging_logcatToFile">Speichert die Logcat-Ausgabe (Android App Log) in eine Datei unter /sdcard/Android/data/fr.gaulupeau.apps.InThePoche/files/</string>
+    <string name="pref_name_misc_logging_logcatToFile">Speichere die Logcat-Ausgabe in eine Datei</string>
+    <string name="manageTags_addMoreTags">Füge mehr Tags hinzu:</string>
+    <string name="manageTags_currentTags_none">Keine</string>
 </resources>
