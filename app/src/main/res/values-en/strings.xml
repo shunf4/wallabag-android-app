@@ -6,6 +6,8 @@
     <string name="add_to_favorites">Add to Favorites</string>
     <string name="remove_from_favorites">Remove from Favorites</string>
     <string name="menuShare">Share</string>
+    <string name="menuShareAsHTML">Share as HTML</string>
+    <string name="menuReload">Reload Content</string>
     <string name="menuNext">Next article</string>
     <string name="menuPrevious">Previous article</string>
     <string name="menuDelete">Delete</string>
@@ -33,6 +35,7 @@
     <string name="dialog_add_label">Add a new article</string>
     <string name="page_url">Page URL</string>
     <string name="share_article_title">Share article</string>
+    <string name="share_article_as_html_title">Share article as HTML</string>
     <string name="share_text_extra">" via @wallabagapp"</string>
     <string name="positive_answer">Yes</string>
     <string name="negative_answer">No</string>
@@ -146,6 +149,8 @@
     <string name="manageTags_textField_hint">One or more tags separated by commas</string>
     <string name="manageTags_addNew">Add</string>
     <string name="manageTags_currentTags">Selected tags:</string>
+    <string name="manageTags_currentTags_none">None</string>
+    <string name="manageTags_addMoreTags">Add more tags:</string>
     <string name="content_estimatedReadingTime">Estimated reading time: %s min</string>
     <string name="lastUpdateTimeLabel">Last update: %s</string>
     <string name="listItem_estimatedReadingTime">%d min</string>
@@ -209,8 +214,12 @@
         <item>Scroll inside window (overflow)</item>
         <item>Break lines (pre-wrap)</item>
     </string-array>
+    <string name="pref_name_ui_showArticleAddedDialog">Show a dialog when bagging</string>
+    <string name="pref_desc_ui_showArticleAddedDialog">Shows a dialog that allows to favorite/archive/tag a newly added article. A toast message will be displayed instead if the option is disabled.</string>
     <string name="pref_name_ui_article_fullscreen">Fullscreen Article View</string>
     <string name="pref_desc_ui_article_fullscreen">Hides system and app bars when reading articles</string>
+    <string name="pref_name_ui_onyxworkaround_enabled">Enable Onyx Boox theme workaround</string>
+    <string name="pref_desc_ui_onyxworkaround_enabled">Work around Onyx devices forcing black link colors</string>
     <string name="pref_name_ui_readingSpeed">Reading speed</string>
     <string name="pref_desc_ui_readingSpeed">Your reading speed (measured in words per minute). Used to calculate estimated reading time.</string>
     <string name="pref_name_ui_keepScreenOn">Keep screen on while reading</string>
@@ -232,6 +241,20 @@
     <string name="pref_desc_ui_swipeArticles">Swipe left or right inside an article to go to previous or next article</string>
     <string name="pref_name_ui_previewImage_enabled">Preview Image</string>
     <string name="pref_desc_ui_previewImage_enabled">Display the preview image before the article</string>
+    <string name="pref_name_ui_annotations_enabled">Annotations support</string>
+    <string name="pref_desc_ui_annotations_enabled">Experimental feature! See, edit and create annotations</string>
+
+    <string name="pref_categoryName_tts">Text-to-speech</string>
+    <string name="pref_name_tts_fastForwardTime">Fast-forward skip time</string>
+    <string name="pref_desc_tts_fastForwardTime">The number of seconds to skip forward when the \"fast-forward\" button is pressed</string>
+    <string name="pref_name_tts_rewindTime">Rewind skip time</string>
+    <string name="pref_desc_tts_rewindTime">The number of seconds to skip backward when the \"rewind\" button is pressed</string>
+    <string name="pref_name_tts_nextButtonIsFastForward">\"Next\" button fast-forwards</string>
+    <string name="pref_desc_tts_nextButtonIsFastForward">Pressing \"next\" media button fast-forwards instead of skipping to next article</string>
+    <string name="pref_name_tts_previousButtonIsRewind">\"Previous\" button rewinds</string>
+    <string name="pref_desc_tts_previousButtonIsRewind">Pressing \"previous\" media button rewinds instead of skipping to previous article</string>
+    <string name="pref_name_tts_showPreviewAsAlbumArt">Use preview as album art</string>
+    <string name="pref_desc_tts_showPreviewAsAlbumArt">Use the article preview image (if it is present) as album art (visible in notification and may be displayed as the lockscreen background)</string>
 
     <string name="pref_categoryName_sync">Synchronization</string>
     <string name="pref_name_sync_syncTypes">Synchronization types</string>
@@ -262,8 +285,6 @@
     </string-array>
     <string name="pref_name_autoSyncQueue_enabled">Separate auto-sync for local changes</string>
     <string name="pref_desc_autoSyncQueue_enabled">This allows local changes (added links, archived articles, etc.) to be synced to the server as soon as network becomes available.</string>
-    <string name="pref_name_autoDlNew_enabled">Download newly added articles</string>
-    <string name="pref_desc_autoDlNew_enabled">Automatically download new articles right after they were added via the app. Note: Fetching will not occur if you have unsynchronized offline changes.</string>
     <string name="pref_name_imageCache_enabled">Put article images in cache</string>
     <string name="pref_desc_imageCache_enabled">Automatically downloads all images from every article and saves them to the device. Depending on the length of your wallabag article list, this can take up a lot of time and space.</string>
 
@@ -281,7 +302,28 @@
     <string name="pref_desc_misc_wipeDB">Wipes all the articles from local database, also removes all not synchronized local changes and URLs</string>
     <string name="pref_name_misc_wipeDB_confirmTitle">Wipe Database?</string>
     <string name="pref_name_misc_wipeDB_confirmMessage">Are you sure you want to wipe the database?</string>
+    <string name="pref_categoryName_misc_localQueue">Local changes</string>
+    <string name="pref_name_misc_localQueue_notice">WARNING</string>
+    <string name="pref_desc_misc_localQueue_notice">Don\'t do anything here unless you know what you\'re doing</string>
+    <string name="pref_name_misc_localQueue_dumpToFile">Dump to file</string>
+    <string name="pref_desc_misc_localQueue_dumpToFile">Dumps all local changes to a txt file (you can study it yourself or attach it to a bug report)</string>
+    <string name="pref_name_misc_localQueue_removeFirstItem">Remove first local queue item</string>
+    <string name="pref_desc_misc_localQueue_removeFirstItem">Removes the first not synchronized item. May help if you get repeating error notifications during sync. Be sure to dump all local changes to file first</string>
+    <string name="pref_name_misc_logging_logcatToFile">Save logcat output to a file</string>
+    <string name="pref_desc_misc_logging_logcatToFile">Saves logcat output (Android app log) to a file in /sdcard/Android/data/fr.gaulupeau.apps.InThePoche/files/</string>
 
+    <string name="misc_localQueue_empty">No local changes</string>
+    <string name="misc_localQueue_removeFirstItem_done">Done</string>
+    <string name="misc_localQueue_dumpToFile_result_dumped">Dumped to %s</string>
+    <string name="misc_localQueue_dumpToFile_result_error">Error: %s</string>
+    <string name="misc_localQueue_dumpToFile_header">If you experience troubles with synchronization, please report your problem here: %s</string>
+    <string name="misc_logging_logcatToFile_result_saved">Logs saved to %s</string>
+    <string name="misc_logging_logcatToFile_result_error">Error: %s</string>
+
+    <string name="issues_url" translatable="false">https://github.com/wallabag/android-app/issues</string>
+
+    <string name="connectionWizard_misc_scanQrCode">Scan a QR code</string>
+    <string name="connectionWizard_misc_installQrCodeScanner">Please install a QR-code scanner</string>
     <string name="connectionWizard_misc_incorrectConnectionURI">Incorrect connection URI used</string>
 
     <string name="connectionWizard_welcome_titleMessage">Welcome to wallabag.</string>
@@ -318,4 +360,31 @@
     <string name="connectionWizard_summary_prev">Back</string>
     <string name="connectionWizard_summary_next">Save settings</string>
     <string name="remove_tag">Remove tag</string>
+
+    <string name="reloadFinished_succeed_toast">Reload Succeed. Refresh articles to resync.</string>
+    <string name="reloadFinished_fail_toast">Reload Fail</string>
+    <string name="notification_stacktrace">Stacktrace:</string>
+    <string name="notification_copyToClipboard">Copy to clipboard</string>
+    <string name="notification_clipboardLabel">Error details</string>
+    <string name="copiedToClipboard">Copied to clipboard</string>
+
+    <string name="menu_annotate">Annotate</string>
+
+    <string name="articleEdit_openArticle">Open article</string>
+
+    <string name="title">Title</string>
+    <string name="untagged"><![CDATA[<untagged>]]></string>
+
+    <string name="contentIsTooLong">The article content is too long to display</string>
+
+    <string name="articleContent_globeIconAltText">Globe icon</string>
+    <string name="articleContent_previewImageAltText">Preview image</string>
+
+    <string name="tts_image">Image: %s</string>
+
+    <string name="notification_action_media_rewind">Rewind</string>
+    <string name="notification_action_media_pause">Pause</string>
+    <string name="notification_action_media_play">Play</string>
+    <string name="notification_action_media_fastforward">Fast Forward</string>
+    <string name="notification_action_media_next">Next</string>
 </resources>
