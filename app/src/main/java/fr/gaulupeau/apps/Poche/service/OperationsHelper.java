@@ -18,6 +18,7 @@ import fr.gaulupeau.apps.Poche.events.EventHelper;
 import fr.gaulupeau.apps.Poche.service.tasks.AddArticleTask;
 import fr.gaulupeau.apps.Poche.service.tasks.ArticleChangeTask;
 import fr.gaulupeau.apps.Poche.service.tasks.DeleteArticleTask;
+import fr.gaulupeau.apps.Poche.service.tasks.ReloadContentTask;
 import fr.gaulupeau.apps.Poche.service.tasks.UpdateArticleProgressTask;
 import fr.gaulupeau.apps.Poche.service.workers.ArticleUpdater;
 import fr.gaulupeau.apps.Poche.service.workers.OperationsWorker;
@@ -207,6 +208,15 @@ public class OperationsHelper {
         request.setArticleID(articleID);
         request.setDownloadFormat(downloadFormat);
         request.setOperationID(operationID);
+
+        startService(context, request);
+    }
+
+    public static void reloadContent(Context context, int articleID) {
+        Log.d(TAG, "reloadContent() started");
+
+        ActionRequest request = new ActionRequest(ActionRequest.Action.RELOAD_CONTENT);
+        request.setArticleID(articleID);
 
         startService(context, request);
     }

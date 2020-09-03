@@ -16,6 +16,7 @@ import java.util.concurrent.FutureTask;
 import fr.gaulupeau.apps.Poche.service.tasks.ActionRequestTask;
 import fr.gaulupeau.apps.Poche.service.tasks.DownloadArticleAsFileTask;
 import fr.gaulupeau.apps.Poche.service.tasks.FetchArticleImagesTask;
+import fr.gaulupeau.apps.Poche.service.tasks.ReloadContentTask;
 import fr.gaulupeau.apps.Poche.service.tasks.SimpleTask;
 import fr.gaulupeau.apps.Poche.service.tasks.SweepDeletedArticlesTask;
 import fr.gaulupeau.apps.Poche.service.tasks.SyncOfflineChangesTask;
@@ -51,6 +52,10 @@ public class ServiceHelper {
 
             case DOWNLOAD_AS_FILE:
                 task = new DownloadArticleAsFileTask(request);
+                break;
+
+            case RELOAD_CONTENT:
+                task = new ReloadContentTask(request);
                 break;
 
             default:
@@ -121,40 +126,18 @@ public class ServiceHelper {
                 postCallCallback);
     }
 
-<<<<<<< HEAD
-    public static void reloadContent(Context context, int articleID) {
-        Log.d(TAG, "reloadContent() started");
+//    public static void reloadContent(Context context, int articleID) {
+//        Log.d(TAG, "reloadContent() started");
+//
+//        ActionRequest request = new ActionRequest(ActionRequest.Action.RELOAD_CONTENT);
+//        request.setArticleID(articleID);
+//
+//        startService(context, request);
+//    }
 
-        ActionRequest request = new ActionRequest(ActionRequest.Action.RELOAD_CONTENT);
-        request.setArticleID(articleID);
-
-        startService(context, request);
-    }
-
-    private static void addNextRequest(ActionRequest actionRequest, ActionRequest nextRequest) {
-        while(actionRequest.getNextRequest() != null) actionRequest = actionRequest.getNextRequest();
-
-        actionRequest.setNextRequest(nextRequest);
-    }
-
-    public static void startService(Context context, ActionRequest request) {
-        switch(request.getAction()) {
-            case ADD_LINK:
-            case ARTICLE_CHANGE:
-            case ARTICLE_TAGS_DELETE:
-            case ARTICLE_DELETE:
-            case SYNC_QUEUE:
-            case UPDATE_ARTICLES:
-            case SWEEP_DELETED_ARTICLES:
-            case RELOAD_CONTENT:
-                startService(context, request, true);
-                break;
-
-            case FETCH_IMAGES:
-            case DOWNLOAD_AS_FILE:
-                startService(context, request, false);
-                break;
-=======
+//    case RELOAD_CONTENT:
+//    startService(context, request, true);
+//                break;
     public static void enqueueServiceTask(Context context,
                                           Class<? extends TaskService> serviceClass,
                                           ParameterizedRunnable task,
@@ -170,8 +153,6 @@ public class ServiceHelper {
                                                Consumer<IBinder> action,
                                                Runnable postCallCallback) {
         Log.d(TAG, "performBoundServiceCall() started");
->>>>>>> upstream/master
-
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {

@@ -89,6 +89,10 @@ public class ArticleActionsHelper {
         return false;
     }
 
+    public void reloadContent(Context context, Article article) {
+        OperationsHelper.reloadContent(context, article.getArticleId());
+    }
+
     public void archive(Context context, Article article, boolean archive) {
         OperationsHelper.archiveArticle(context, article.getArticleId(), archive);
     }

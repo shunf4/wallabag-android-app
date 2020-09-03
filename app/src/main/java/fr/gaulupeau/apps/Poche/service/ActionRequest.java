@@ -17,13 +17,8 @@ import static fr.gaulupeau.apps.Poche.service.ParcelableUtils.writeLong;
 public class ActionRequest implements Parcelable {
 
     public enum Action {
-<<<<<<< HEAD
-        ADD_LINK, ARTICLE_CHANGE, ARTICLE_TAGS_DELETE, ARTICLE_DELETE,
         SYNC_QUEUE, UPDATE_ARTICLES, SWEEP_DELETED_ARTICLES, FETCH_IMAGES, DOWNLOAD_AS_FILE,
-        RELOAD_CONTENT
-=======
-        SYNC_QUEUE, UPDATE_ARTICLES, SWEEP_DELETED_ARTICLES, FETCH_IMAGES, DOWNLOAD_AS_FILE
->>>>>>> upstream/master
+         RELOAD_CONTENT
     }
 
     public enum RequestType {

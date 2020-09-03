@@ -4,6 +4,19 @@ apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 28
 
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+        }
+
+        releaseLocal {
+            storeFile file("../shunf4.jks")
+            keyAlias "main"
+            keyPassword "14285714"
+            storePassword "14285714"
+        }
+    }
+
     defaultConfig {
         applicationId "fr.gaulupeau.apps.InThePoche"
         minSdkVersion 21
@@ -32,10 +45,14 @@ android {
     }
 
     buildTypes {
-        release {
+        releaseLocal {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.releaseLocal
+        }
+        releaseUnsigned {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             versionNameSuffix '-DEBUG'
@@ -62,28 +79,19 @@ dependencies {
     implementation 'androidx.media:media:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-<<<<<<< HEAD
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'org.greenrobot:eventbus:3.1.1'
-    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.1.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
-    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.2.2'
-    implementation 'org.conscrypt:conscrypt-android:2.2.1'
-=======
     implementation 'com.google.android.material:material:1.2.0'
     implementation 'org.greenrobot:eventbus:3.2.0'
-    implementation 'org.greenrobot:greendao:3.3.0'
+    // implementation 'org.greenrobot:greendao:3.3.0'
     annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.2.0'
     implementation 'com.squareup.okhttp3:okhttp:4.8.1'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.8.1'
     implementation 'org.conscrypt:conscrypt-android:2.4.0'
->>>>>>> upstream/master
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
     implementation 'com.mikepenz:aboutlibraries:7.1.0'
     implementation 'com.github.di72nn.wallabag-api-wrapper:api-wrapper:v2.0.0-beta.5'
     implementation 'org.slf4j:slf4j-android:1.7.30'
-    implementation files('libs\\greendao-3.2.3-SNAPSHOT.jar')
-    implementation files('libs\\greendao-generator-3.2.3-SNAPSHOT.jar')
-    implementation files('libs\\greendao-api-3.2.3-SNAPSHOT.jar')
+    implementation files('libs/greendao-3.3.0.jar')
+    implementation files('libs/greendao-generator-3.3.0.jar')
+    implementation files('libs/greendao-api-3.3.0.jar')
 }

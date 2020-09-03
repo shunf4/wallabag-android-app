@@ -361,10 +361,8 @@
     <string name="connectionWizard_summary_next">Save settings</string>
     <string name="remove_tag">Remove tag</string>
 
-<<<<<<< HEAD
     <string name="reloadFinished_succeed_toast">Reload Succeed. Refresh articles to resync.</string>
     <string name="reloadFinished_fail_toast">Reload Fail</string>
-=======
     <string name="notification_stacktrace">Stacktrace:</string>
     <string name="notification_copyToClipboard">Copy to clipboard</string>
     <string name="notification_clipboardLabel">Error details</string>
@@ -389,5 +387,4 @@
     <string name="notification_action_media_play">Play</string>
     <string name="notification_action_media_fastforward">Fast Forward</string>
     <string name="notification_action_media_next">Next</string>
->>>>>>> upstream/master
 </resources>

@@ -311,36 +311,32 @@ public class ReadArticleActivity extends BaseActionBarActivity {
             case R.id.menuArticleMarkAsRead:
             case R.id.menuArticleMarkAsUnread:
                 markAsReadAndClose();
-<<<<<<< HEAD
-                break;
+                return true;
 
             case R.id.menuArticleFavorite:
             case R.id.menuArticleUnfavorite:
-                toggleFavorite();
-                break;
+                // toggleFavorite();
+                return true;
 
             case R.id.menuReload:
                 reloadContent();
-                break;
+                return true;
 
             case R.id.menuShare:
                 shareArticle();
-                break;
+                return true;
 
             case R.id.menuShareAsHTML:
                 shareArticleAsHTML();
-                break;
+                return true;
 
             case R.id.menuChangeTitle:
-                showChangeTitleDialog();
-                break;
+                // showChangeTitleDialog();
+                return true;
 
             case R.id.menuManageTags:
-                manageTags();
-                break;
-=======
+                // manageTags();
                 return true;
->>>>>>> upstream/master
 
             case R.id.menuDelete:
                 deleteArticle();
@@ -1075,35 +1071,6 @@ public class ReadArticleActivity extends BaseActionBarActivity {
         builder.show();
     }
 
-    private boolean handleTagClicked(String url) {
-        final String tagUrlPrefix = "tag://";
-
-        if (!url.startsWith(tagUrlPrefix)) return false;
-
-        long tagId;
-        try {
-<<<<<<< HEAD
-            startActivity(intent);
-        } catch(ActivityNotFoundException e) {
-            Log.w(TAG, "openURL() failed to open URL", e);
-            Toast.makeText(this, R.string.message_couldNotOpenUrl, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void markAsReadAndClose() {
-        OperationsHelper.archiveArticle(this, article.getArticleId(), !article.getArchive());
-
-        finish();
-    }
-
-    private void toggleFavorite() {
-        OperationsHelper.favoriteArticle(this, article.getArticleId(), !article.getFavorite());
-    }
-
-    private void shareArticle() {
-        shareArticle(articleTitle, articleUrl);
-    }
-
     private void shareArticleAsHTML() {
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("text/html");
@@ -1112,19 +1079,17 @@ public class ReadArticleActivity extends BaseActionBarActivity {
         startActivity(Intent.createChooser(send, getString(R.string.share_article_as_html_title)));
     }
 
-    private void shareArticle(String articleTitle , String articleUrl) {
-        String shareText = articleUrl;
-        if(!TextUtils.isEmpty(articleTitle)) shareText = articleTitle + " " + shareText;
+    private boolean handleTagClicked(String url) {
+        final String tagUrlPrefix = "tag://";
 
+        if (!url.startsWith(tagUrlPrefix)) return false;
 
-        if(settings.isAppendWallabagMentionEnabled()) {
-            shareText += getString(R.string.share_text_extra);
-=======
+        long tagId;
+        try {
             tagId = Long.parseLong(url.substring(tagUrlPrefix.length()));
         } catch (NumberFormatException nfe) {
             Log.w(TAG, "handleTagClicked() couldn't handle tag URL: " + url);
             return true;
->>>>>>> upstream/master
         }
 
         Tag tag = null;
@@ -1154,20 +1119,17 @@ public class ReadArticleActivity extends BaseActionBarActivity {
         articleActionsHelper.openUrl(this, url);
     }
 
-<<<<<<< HEAD
     private void reloadContent() {
-        OperationsHelper.reloadContent(this, article.getArticleId());
+        articleActionsHelper.reloadContent(this, article);
     }
 
-    private void manageTags() {
-        Intent manageTagsIntent = new Intent(this, ManageArticleTagsActivity.class);
-        manageTagsIntent.putExtra(ManageArticleTagsActivity.PARAM_ARTICLE_ID, article.getArticleId());
-=======
     private void markAsReadAndClose() {
         articleActionsHelper.archive(this, article, !article.getArchive());
->>>>>>> upstream/master
-
         finish();
+    }
+
+    private void shareArticle() {
+        shareArticle(articleUrl);
     }
 
     private void shareArticle(String articleUrl) {
