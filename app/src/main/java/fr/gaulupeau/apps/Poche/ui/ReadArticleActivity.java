@@ -315,7 +315,7 @@ public class ReadArticleActivity extends BaseActionBarActivity {
 
             case R.id.menuArticleFavorite:
             case R.id.menuArticleUnfavorite:
-                // toggleFavorite();
+                toggleFavorite(item.getItemId() == R.id.menuArticleFavorite);
                 return true;
 
             case R.id.menuReload:
@@ -331,11 +331,11 @@ public class ReadArticleActivity extends BaseActionBarActivity {
                 return true;
 
             case R.id.menuChangeTitle:
-                // showChangeTitleDialog();
+                showChangeTitleDialog();
                 return true;
 
             case R.id.menuManageTags:
-                // manageTags();
+                manageTags();
                 return true;
 
             case R.id.menuDelete:
@@ -1121,6 +1121,18 @@ public class ReadArticleActivity extends BaseActionBarActivity {
 
     private void reloadContent() {
         articleActionsHelper.reloadContent(this, article);
+    }
+
+    private void manageTags() {
+        articleActionsHelper.manageTags(this, article.getArticleId());
+    }
+
+    private void showChangeTitleDialog() {
+        articleActionsHelper.showChangeTitleDialog(this, article);
+    }
+
+    private void toggleFavorite(boolean favorite) {
+        articleActionsHelper.favorite(this, article, favorite);
     }
 
     private void markAsReadAndClose() {
