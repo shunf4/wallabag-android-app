@@ -1,22 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
+if (file("sign.gradle").exists()) {
+    apply from: 'sign.gradle'
+}
+
 android {
     compileSdkVersion 30
     ndkVersion "21.3.6528147"
-
-    signingConfigs {
-        debug {
-            storeFile file("../debug.keystore")
-        }
-
-        releaseLocal {
-            storeFile file("../shunf4.jks")
-            keyAlias "main"
-            keyPassword "14285714"
-            storePassword "14285714"
-        }
-    }
 
     defaultConfig {
         applicationId "fr.gaulupeau.apps.InThePoche"
@@ -46,15 +37,36 @@ android {
     }
 
     buildTypes {
-        releaseLocal {
+        release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.releaseLocal
+
+            if (file("sign.gradle").exists()) {
+                // Local environment
+                signingConfig signingConfigs.release
+                debuggable true
+
+                /* sign.gradle is like:
+android {
+    signingConfigs {
+        release {
+            keyAlias 'aliasxxx'
+            keyPassword 'passwordxxx'
+            storeFile file('../xxx.jks')
+            storePassword 'passwordxxx'
         }
-        releaseUnsigned {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+}
+GitHub config is like:
+SIGNING_KEY:
+`openssl base64 < some_signing_key.jks | tr -d '\n'`
+ALIAS:
+KEY_STORE_PASSWORD:
+KEY_PASSWORD:
+*/
+            }
         }
+
         debug {
             versionNameSuffix '-DEBUG'
         }
