@@ -10,6 +10,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="22"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- needed by TTS service for Android P or above -->
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name="fr.gaulupeau.apps.Poche.App"
         android:allowBackup="true"
@@ -131,14 +137,6 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/icon_unread_info" />
-        </receiver>
-        <receiver
-            android:name="fr.gaulupeau.apps.Poche.network.ConnectivityChangeReceiver"
-            android:enabled="false">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
-                        tools:ignore="BatteryLife" />
-            </intent-filter>
         </receiver>
         <receiver
             android:name="fr.gaulupeau.apps.Poche.service.BootReceiver"

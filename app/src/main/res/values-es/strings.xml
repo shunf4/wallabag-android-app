@@ -81,7 +81,6 @@
     <string name="d_checkCredentials_errorMessage_unknown">Error desconocido</string>
     <string name="d_checkCredentials_errorMessage_unknownWithMessage">Error desconocido: %s</string>
     <string name="wrongUsernameOrPassword_errorMessage">Inicio de sesión fallido: Probablemente usuario o contraseña incorrecta</string>
-    <string name="unsuccessfulRequest_errorMessage">"Solicitud fallida; código de respuesta: %1$d, mensaje de respuesta: %2$s"</string>
     <string name="previousUpdateNotFinished">La actualización anterior aún no ha terminado</string>
     <string name="feedName_favorites">Favoritos</string>
     <string name="feedName_archived">Archivados</string>
@@ -345,4 +344,7 @@
     <string name="pref_name_misc_logging_logcatToFile">Guardar la salida de logcat en un archivo</string>
     <string name="manageTags_addMoreTags">Añadir más etiquetas:</string>
     <string name="manageTags_currentTags_none">Ninguna</string>
+    <string name="notification_channel_name_background_operations">Operaciones en segundo plano</string>
+    <string name="notification_backgroundOperations">Operaciones en segundo plano</string>
+    <string name="menu_tag">Añadir etiqueta</string>
 </resources>

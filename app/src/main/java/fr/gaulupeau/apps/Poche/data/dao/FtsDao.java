@@ -1,8 +1,8 @@
 package fr.gaulupeau.apps.Poche.data.dao;
 
-import android.os.Build;
-
 import org.greenrobot.greendao.database.Database;
+
+import fr.gaulupeau.apps.Poche.App;
 
 public class FtsDao {
 
@@ -51,10 +51,9 @@ public class FtsDao {
     }
 
     private static void createTable(Database db, boolean ifNotExists) {
-        String options = ", content=\"" + VIEW_FOR_FTS_NAME + "\"";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            options += ", tokenize=unicode61";
-        }
+        String options = ", content=\"" + VIEW_FOR_FTS_NAME + "\""
+                + ", tokenize="
+                + (App.getSettings().isFtsIcuTokenizerEnabled() ? "icu" : "unicode61");
 
         db.execSQL("create virtual table " + getIfNotExistsConstraint(ifNotExists) +
                 TABLE_NAME + " using fts4(" +

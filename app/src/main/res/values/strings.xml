@@ -86,7 +86,6 @@
     <string name="d_checkCredentials_errorMessage_unknown">Unknown error</string>
     <string name="d_checkCredentials_errorMessage_unknownWithMessage">Unknown error: %s</string>
     <string name="wrongUsernameOrPassword_errorMessage">Couldn\'t log in: Presumably wrong username or password</string>
-    <string name="unsuccessfulRequest_errorMessage">"Request unsuccessful; response code: %1$d, response message: %2$s"</string>
     <string name="previousUpdateNotFinished">Previous update not finished yet</string>
     <string name="feedName_favorites">Favorites</string>
     <string name="feedName_archived">Archived</string>
@@ -124,6 +123,7 @@
     <string name="notification_sweepingDeletedArticles">Sweeping deleted articles</string>
     <string name="notification_downloadingImages">Downloading images</string>
     <string name="notification_syncingQueue">Synchronizing local changes</string>
+    <string name="notification_backgroundOperations">Background operations</string>
     <string name="notification_error">Error</string>
     <string name="notification_incorrectCredentials">Incorrect credentials</string>
     <string name="notification_incorrectConfiguration">Incorrect configuration</string>
@@ -136,6 +136,7 @@
     <string name="notification_channel_name_tts">wallabag TTS</string>
     <string name="notification_channel_name_sync">Synchronization</string>
     <string name="notification_channel_name_downloading_articles">Downloading PDFs</string>
+    <string name="notification_channel_name_background_operations">Background operations</string>
     <string name="notification_channel_name_error">Errors</string>
     <string name="menu_lists_search">Search</string>
     <string name="menu_lists_changeSortOrder">Change sort order</string>
@@ -243,6 +244,10 @@
     <string name="pref_desc_ui_previewImage_enabled">Display the preview image before the article</string>
     <string name="pref_name_ui_annotations_enabled">Annotations support</string>
     <string name="pref_desc_ui_annotations_enabled">Experimental feature! See, edit and create annotations</string>
+    <string name="pref_name_ui_mathRendering_enabled">Math rendering</string>
+    <string name="pref_desc_ui_mathRendering_enabled">Enable LaTeX-math rendering via KaTeX</string>
+    <string name="pref_name_ui_mathRendering_delimiters">Math delimiters</string>
+    <string name="pref_desc_ui_mathRendering_delimiters">Select the environment delimiters that KaTeX should process</string>
 
     <string name="pref_categoryName_tts">Text-to-speech</string>
     <string name="pref_name_tts_fastForwardTime">Fast-forward skip time</string>
@@ -298,6 +303,8 @@
     <string name="pref_desc_misc_appendWallabagMention">Append \"via @wallabagapp\" to shared texts</string>
     <string name="pref_name_misc_handleHttpScheme">Handle HTTP scheme</string>
     <string name="pref_desc_misc_handleHttpScheme">Show wallabag in the list of web browsers</string>
+    <string name="pref_name_misc_ftsIcuTokenizer_enabled">Use ICU tokenizer for full-text-search</string>
+    <string name="pref_desc_misc_ftsIcuTokenizer_enabled">Uses ICU tokenizer for full-text-search indexing (generic unicode61 tokenizer is used otherwise). May improve search results for CJK languages. \"Full update\" is required for the option to take effect</string>
     <string name="pref_name_misc_wipeDB">Wipe Database</string>
     <string name="pref_desc_misc_wipeDB">Wipes all the articles from local database, also removes all not synchronized local changes and URLs</string>
     <string name="pref_name_misc_wipeDB_confirmTitle">Wipe Database?</string>

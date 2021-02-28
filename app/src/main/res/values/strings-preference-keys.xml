@@ -44,6 +44,8 @@
     <string name="pref_key_ui_previewImage_enabled" translatable="false">ui.previewImage.enabled</string>
     <string name="pref_key_ui_annotations_enabled" translatable="false">ui.annotations.enabled</string>
     <string name="pref_key_ui_onyxworkaround_enabled" translatable="false">ui.onyxworkaround.enabled</string>
+    <string name="pref_key_ui_mathRendering_enabled" translatable="false">ui.mathRendering.enabled</string>
+    <string name="pref_key_ui_mathRendering_delimiters" translatable="false">ui.mathRendering.delimiters</string>
 
     <string name="pref_key_tts" translatable="false">tts</string>
     <string name="pref_key_tts_category" translatable="false">tts.category</string>
@@ -80,6 +82,7 @@
     <string name="pref_key_misc_category" translatable="false">misc.category</string>
     <string name="pref_key_misc_appendWallabagMention_enabled" translatable="false">misc.appendWallabagMention.enabled</string>
     <string name="pref_key_misc_handleHttpScheme" translatable="false">misc.handleHttpScheme</string>
+    <string name="pref_key_misc_ftsIcuTokenizer_enabled" translatable="false">misc.ftsIcuTokenizer.enabled</string>
     <string name="pref_key_misc_wipeDB" translatable="false">misc.wipeDB</string>
     <string name="pref_key_misc_localQueue" translatable="false">misc.localQueue</string>
     <string name="pref_key_misc_localQueue_category" translatable="false">misc.localQueue.category</string>

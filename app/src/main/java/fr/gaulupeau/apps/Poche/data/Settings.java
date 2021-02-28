@@ -11,9 +11,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.core.util.Supplier;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import fr.gaulupeau.apps.InThePoche.R;
 import fr.gaulupeau.apps.Poche.App;
-import fr.gaulupeau.apps.Poche.network.ConnectivityChangeReceiver;
 import fr.gaulupeau.apps.Poche.service.WallabagJobService;
 import fr.gaulupeau.apps.Poche.ui.HttpSchemeHandlerActivity;
 import fr.gaulupeau.apps.Poche.ui.Sortable;
@@ -46,11 +51,7 @@ public class Settings {
     }
 
     public static void enableConnectivityChangeReceiver(Context context, boolean enable) {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            enableComponent(context, ConnectivityChangeReceiver.class, enable);
-        } else {
-            WallabagJobService.enable(context, enable);
-        }
+        WallabagJobService.enable(context, enable);
     }
 
     // TODO: reuse in setHandleHttpScheme
@@ -215,6 +216,27 @@ public class Settings {
 
     public void setFloat(int keyResourceID, float value) {
         setFloat(context.getString(keyResourceID), value);
+    }
+
+    public Set<String> getStringSet(String key, Set<String> defValues) {
+        return pref.getStringSet(key, defValues);
+    }
+
+    public Set<String> getStringSet(int keyResourceID, Set<String> defValues) {
+        return pref.getStringSet(context.getString(keyResourceID), defValues);
+    }
+
+    public Set<String> getStringSet(int keyResourceID, Supplier<Set<String>> defValueSupplier) {
+        Set<String> set = getStringSet(keyResourceID, (Set<String>) null);
+        return set != null ? set : defValueSupplier.get();
+    }
+
+    public void setStringSet(String key, Set<String> values) {
+        pref.edit().putStringSet(key, values).apply();
+    }
+
+    public void setStringSet(int keyResourceID, Set<String> values) {
+        setStringSet(context.getString(keyResourceID), values);
     }
 
     public String getUrl() {
@@ -458,6 +480,24 @@ public class Settings {
         setBoolean(R.string.pref_key_ui_onyxworkaround_enabled, value);
     }
 
+    public boolean isMathRenderingEnabled() {
+        return getBoolean(R.string.pref_key_ui_mathRendering_enabled, false);
+    }
+
+    public void setMathRenderingEnabled(boolean value) {
+        setBoolean(R.string.pref_key_ui_mathRendering_enabled, value);
+    }
+
+    public Set<String> getMathRenderingDelimiters() {
+        return getStringSet(R.string.pref_key_ui_mathRendering_delimiters, () ->
+                new HashSet<>(Arrays.asList(context.getResources().getStringArray(
+                        R.array.pref_option_mathRendering_delimiters_defaultValues))));
+    }
+
+    public void setMathRenderingDelimiters(Set<String> values) {
+        setStringSet(R.string.pref_key_ui_mathRendering_delimiters, values);
+    }
+
     public boolean isTapToScrollEnabled() {
         return getBoolean(R.string.pref_key_ui_tapToScroll_enabled, false);
     }
@@ -688,6 +728,14 @@ public class Settings {
 
     public void setAppendWallabagMentionEnabled(boolean value) {
         setBoolean(R.string.pref_key_misc_appendWallabagMention_enabled, value);
+    }
+
+    public boolean isFtsIcuTokenizerEnabled() {
+        return getBoolean(R.string.pref_key_misc_ftsIcuTokenizer_enabled, false);
+    }
+
+    public void setFtsIcuTokenizerEnabled(boolean value) {
+        setBoolean(R.string.pref_key_misc_ftsIcuTokenizer_enabled, value);
     }
 
     public boolean isFirstRun() {

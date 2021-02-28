@@ -19,6 +19,8 @@ import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.HttpAuthHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -642,7 +644,13 @@ public class ReadArticleActivity extends BaseActionBarActivity {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void initWebView() {
-        webViewContent.getSettings().setJavaScriptEnabled(true);
+        WebSettings webViewSettings = webViewContent.getSettings();
+        webViewSettings.setJavaScriptEnabled(true);
+
+        if (settings.isImageCacheEnabled() && !webViewSettings.getAllowFileAccess()) {
+            Log.d(TAG, "initWebView() enabling WebView file access");
+            webViewSettings.setAllowFileAccess(true);
+        }
 
         initTtsController();
         initAnnotationController();
@@ -701,9 +709,10 @@ public class ReadArticleActivity extends BaseActionBarActivity {
                 super.onPageFinished(view, url);
             }
 
-            @SuppressWarnings("deprecation") // can't use newer method until API 21
             @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+
                 // If we try to open current URL, do not propose to save it, directly open browser
                 if (url.equals(articleUrl)) {
                     openURL(url);
@@ -946,6 +955,11 @@ public class ReadArticleActivity extends BaseActionBarActivity {
         if (onyxWorkaroundEnabled) {
             extra += "\n" +
                     "\t\t<script src=\"onyx-style-workaround.js\"></script>";
+        }
+
+        if (settings.isMathRenderingEnabled()) {
+            String delimiters = TextUtils.join(",", settings.getMathRenderingDelimiters());
+            extra += String.format(StorageHelper.readRawString(R.raw.katex_part), delimiters);
         }
 
         return extra;

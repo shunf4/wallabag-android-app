@@ -83,7 +83,6 @@
     <string name="d_checkCredentials_errorMessage_unknown">未知错误</string>
     <string name="d_checkCredentials_errorMessage_unknownWithMessage">未知错误: %s</string>
     <string name="wrongUsernameOrPassword_errorMessage">无法登录: 可能是错误的用户名或密码</string>
-    <string name="unsuccessfulRequest_errorMessage">请求失败；响应代码: %1$d，响应消息: %2$s</string>
     <string name="previousUpdateNotFinished">上一个更新尚未完成</string>
     <string name="feedName_favorites">收藏</string>
     <string name="feedName_archived">存档</string>
@@ -337,9 +336,17 @@
     <string name="pref_name_ui_showArticleAddedDialog">保存页面时显示对话框</string>
     <string name="misc_logging_logcatToFile_result_error">错误 ：%s</string>
     <string name="misc_logging_logcatToFile_result_saved">已将日志保存到 %s</string>
-    <string name="pref_desc_misc_logging_logcatToFile">"保存logcat输出  (安卓应用日志) 到/sdcard/Android/data/fr.gaulupeau.apps.InThePoche/files/目录下的一个文件."</string>
+    <string name="pref_desc_misc_logging_logcatToFile">保存logcat输出 (安卓应用日志) 到/sdcard/Android/data/fr.gaulupeau.apps.InThePoche/files/目录下的一个文件</string>
     <string name="pref_name_misc_logging_logcatToFile">保存logcat输出到一个文件</string>
     <string name="manageTags_addMoreTags">添加更多标签：</string>
     <string name="manageTags_currentTags_none">无</string>
     <string name="menu_tag">添加标签</string>
+    <string name="notification_channel_name_background_operations">后台操作</string>
+    <string name="notification_backgroundOperations">后台操作</string>
+    <string name="pref_desc_ui_mathRendering_delimiters">选择 KaTeX 应该处理的环境分隔符</string>
+    <string name="pref_name_ui_mathRendering_delimiters">数学分隔符</string>
+    <string name="pref_desc_ui_mathRendering_enabled">允许通过 KaTeX 解析 LaTeX-math</string>
+    <string name="pref_name_ui_mathRendering_enabled">数学函数解析</string>
+    <string name="pref_desc_misc_ftsIcuTokenizer_enabled">使用 ICU 分词器进行全文搜索索引 (否则使用通用 unicode61 分词器)。可以改善中日韩统一表意文字的搜索结果。需要“完整更新”使该选项生效</string>
+    <string name="pref_name_misc_ftsIcuTokenizer_enabled">对全文搜索使用 ICU 分词器</string>
 </resources>

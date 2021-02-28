@@ -1,12 +1,13 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="btnMarkRead">Marcar como lido</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="btnMarkRead">Marcar como lido</string>
     <string name="btnMarkUnread">Marcar como não lido</string>
     <string name="add_to_favorites">Adicionar aos favoritos</string>
     <string name="remove_from_favorites">Remover dos favoritos</string>
     <string name="menuShare">Compartilhar</string>
     <string name="menuNext">Próximo artigo</string>
     <string name="menuPrevious">Artigo anterior</string>
-    <string name="menuDelete">Excluir</string>
+    <string name="menuDelete">Apagar</string>
     <string name="menuOpenOriginal">Abrir original</string>
     <string name="menuCopyOriginalURL">Copiar URL original</string>
     <string name="menuTTS">Conversão de texto em voz</string>
@@ -23,7 +24,7 @@
     <string name="d_deleteArticle_title">Deletar artigo?</string>
     <string name="d_deleteArticle_message">Tem certeza que deseja deletar o artigo?</string>
     <string name="txtNetOffline">Por favor checar conexão com Internet!</string>
-    <string name="txtConfigNotSet">Por favor configure o aplicativo antes de sincronizar.</string>
+    <string name="txtConfigNotSet">Por favor configure a app antes de sincronizar.</string>
     <string name="txtUrlCopied">URL do artigo copiada para prancheta</string>
     <string name="dialog_add_label">Adicionar um novo artigo</string>
     <string name="page_url">URL da Página</string>
@@ -52,7 +53,7 @@
     <string name="testConnection_errorMessage_unsupportedServerVersion">Versão de servidor não suportada detectada</string>
     <string name="testConnection_errorMessage_wallabagNotFound">serviço wallabag não encontrado — checar URL</string>
     <string name="testConnection_errorMessage_httpAuth">Autenticação HTTP falhou</string>
-    <string name="testConnection_errorMessage_incorrectCredentials">Não pode logar — checar nome de usuário e senha</string>
+    <string name="testConnection_errorMessage_incorrectCredentials">Não pode logar — checar nome de utilizador e palavra-passe</string>
     <string name="testConnection_errorMessage_authProblems">Problemas relacionados à autorização. Esse normalmente são causados por redirecionamentos HTTP.</string>
     <string name="testConnection_errorMessage_unknown">Erro desconhecido</string>
     <string name="testConnection_errorMessage_unknownWithMessage">Erro desconhecido: %s</string>
@@ -60,7 +61,7 @@
     <string name="d_testConnection_urlSuggestion_acceptButton">Usar sugerido</string>
     <string name="d_testConnection_urlSuggestion_declineButton">Usar meu</string>
     <string name="d_testConnection_urlSuggestion_cancelButton">Cancelar</string>
-    <string name="checkCredentials_progressDialogMessage">Testando o acesso à API</string>
+    <string name="checkCredentials_progressDialogMessage">Testando o acesso à API…</string>
     <string name="connectionWizard_providerSelection_next">Seguinte</string>
     <string name="connectionWizard_providerSelection_prev">Pular</string>
     <string name="connectionWizard_providerSelection_provider_general_name">Outro</string>
@@ -75,7 +76,7 @@
     <string name="d_checkCredentials_errorMessage_notFoundWithMessage">API não encontrada: %s</string>
     <string name="d_checkCredentials_errorMessage_unknownWithMessage">Error desconhecido: %s</string>
     <string name="d_testConnection_fail_title">Teste de conexão falhido</string>
-    <string name="dialog_title_downloadFileFormat">Selecione o formato do arquivo</string>
+    <string name="dialog_title_downloadFileFormat">Selecione o formato do ficheiro</string>
     <string name="pref_desc_connection_url">
         Exemplos:\n
         https://wallabag.example.com\n
@@ -83,7 +84,7 @@
         https://app.wallabag.it\n
         https://framabag.org
     </string>
-    <string name="pref_name_connection_username">Nome de usuário</string>
+    <string name="pref_name_connection_username">Nome do utilizador</string>
     <string name="pref_name_sync_syncTypes">Tipos de sincronização</string>
     <string name="notification_incorrectConfiguration">Configuração incorreta</string>
     <string name="notification_incorrectCredentials">Credenciáis incorretas</string>
@@ -94,7 +95,7 @@
     <string name="feedName_favorites">Favoritos</string>
     <string name="menu_lists_search">Pesquisar</string>
     <string name="manageTags_addNew">Adicionar</string>
-    <string name="menuDownloadAsFile">Baixar como arquivo</string>
+    <string name="menuDownloadAsFile">Descarregar como ficheiro</string>
     <string name="pref_option_autoSync_interval_24h">24 horas</string>
     <string name="noNextArticle">Não há mais artigos na lista atual</string>
     <string name="remove_tag">Remover tag</string>
@@ -106,7 +107,7 @@
     <string name="pref_desc_sync_sweepingAfterFastSync_enabled">Leia a descrição dos diferentes tipos de sincronização acima para obter mais informações</string>
     <string name="connectionWizard_misc_incorrectConnectionURI">URI de conexão incorreta</string>
     <string name="pref_name_storage_dbPath_dbMoved">Base de dados movida</string>
-    <string name="connectionWizard_summary_text">Clique para salvar e ir para a tela principal.</string>
+    <string name="connectionWizard_summary_text">Clique para gravar e ir para o ecrã principal.</string>
     <string name="menu_changeTitle">Mudar o título</string>
     <string name="manageTags_title">Gerenciar tags</string>
     <string name="menu_manageTags">Gerenciar tags</string>
@@ -129,7 +130,7 @@
     <string name="notification_expandedError">Erro: %s</string>
     <string name="themeName_dark">Escuro</string>
     <string name="themeName_dark_contrast">Escuro (alto contraste)</string>
-    <string name="pref_name_ui_theme">Tema do aplicativo</string>
+    <string name="pref_name_ui_theme">Tema da app</string>
     <string name="connectionWizard_provider_framabag_next">Conectar</string>
     <string name="connectionWizard_provider_general_next">Conectar</string>
     <string name="connectionWizard_provider_wallabagit_next">Conectar</string>
@@ -138,7 +139,7 @@
     <string name="notification_unknownError">Error desconhecido</string>
     <string name="nav_other_settings">Configuração</string>
     <string name="nav_add">Adicionar artigo</string>
-    <string name="pref_name_connection_password">Senha</string>
+    <string name="pref_name_connection_password">Palavra-passe</string>
     <string name="feedName_archived">Arquivados</string>
     <string name="themeName_light">Claro</string>
     <string name="themeName_light_contrast">Claro (alto contraste)</string>
@@ -160,4 +161,15 @@
     <string name="pref_option_autoSync_interval_15m">15 minutos</string>
     <string name="pref_option_autoSync_interval_12h">12 horas</string>
     <string name="listItem_estimatedReadingTime">%d min</string>
+    <string name="d_getCredentials_title_fail">Não foi possível obter as credenciais da API</string>
+    <string name="getCredentials_progressDialogMessage">Obtendo credenciais da API…</string>
+    <string name="d_testConnection_urlSuggestion_message_mandatory">Recomenda-se mudar a URL para: %s</string>
+    <string name="d_testConnection_urlSuggestion_message">Recomenda-se mudar a URL para: %s. Entretanto, podes utilizar a URL original também.</string>
+    <string name="testConnection_errorMessage_unknownPageAfterLogin">Página desconhecida após o início da sessão. Isto usualmente ocorre ao ativar a autenticação em duas etapas, a qual ainda não é suportada pelo aplicativo</string>
+    <string name="d_add_fail_text">Impossível de achar uma URL no texto a ser compartilhado:
+\n</string>
+    <string name="ttsFastRewind">Rebobinamento rápido</string>
+    <string name="ttsFastForward">Avanço rápido</string>
+    <string name="ttsPitch">Tom da voz</string>
+    <string name="testConnection_errorMessage_noCSRF">Erro ao analisar o formulário de login</string>
 </resources>

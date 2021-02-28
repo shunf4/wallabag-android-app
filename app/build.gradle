@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     ndkVersion "21.3.6528147"
 
     signingConfigs {
@@ -21,9 +21,9 @@ android {
     defaultConfig {
         applicationId "fr.gaulupeau.apps.InThePoche"
         minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 227
-        versionName "2.4.0-shunf4-5"
+        targetSdkVersion 30
+        versionCode 228
+        versionName "2.4.2-shunf4-1"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -77,7 +77,7 @@ greendao {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.media:media:1.1.0'
+    implementation 'androidx.media:media:1.2.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.2.1'
@@ -90,7 +90,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
     implementation 'com.mikepenz:aboutlibraries:7.1.0'
-    implementation 'com.github.di72nn.wallabag-api-wrapper:api-wrapper:v2.0.0-beta.5'
+    implementation 'com.github.di72nn.wallabag-api-wrapper:api-wrapper:v2.0.0-beta.6'
     implementation 'org.slf4j:slf4j-android:1.7.30'
     implementation files('libs/greendao-3.3.0.jar')
     implementation files('libs/greendao-generator-3.3.0.jar')
