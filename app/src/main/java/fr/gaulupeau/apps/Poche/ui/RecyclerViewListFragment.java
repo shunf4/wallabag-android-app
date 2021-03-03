@@ -171,17 +171,33 @@ public abstract class RecyclerViewListFragment<T, V extends RecyclerView.Adapter
     protected abstract V createListAdapter(List<T> list);
 
     protected void resetContent() {
-        List<T> items = getItems(0);
-
         boolean scrollToTop = false;
+        int currentPage = -1;
+        int perPage = getItemCountPerPage();
         if (recyclerViewLayoutManager != null) {
-            scrollToTop = recyclerViewLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
+            int scrollPosition = recyclerViewLayoutManager.findFirstVisibleItemPosition();
+            scrollToTop = scrollPosition == 0;
+            currentPage = scrollPosition / perPage;
         }
 
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(getDiffUtilCallback(itemList, items));
+        int preserveUntilPage;
+        if (currentPage == -1 || currentPage == 0) {
+            preserveUntilPage = 0;
+        } else {
+            List<T> lastPage = getItems(currentPage - 1);
+            preserveUntilPage =
+                    getDiffUtilCallback(itemList, lastPage).areItemsTheSame(currentPage * perPage - 1, perPage - 1)
+                    ? currentPage : 0;
+        }
 
-        itemList.clear();
+        List<T> items = getItems(preserveUntilPage);
+
+        List<T> oldItemList = new ArrayList<T>(itemList);
+
+        itemList.subList(preserveUntilPage * perPage, itemList.size()).clear();
         itemList.addAll(items);
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(getDiffUtilCallback(oldItemList, itemList));
 
         diffResult.dispatchUpdatesTo(listAdapter);
 
@@ -204,6 +220,8 @@ public abstract class RecyclerViewListFragment<T, V extends RecyclerView.Adapter
     }
 
     protected abstract List<T> getItems(int page);
+
+    protected abstract int getItemCountPerPage();
 
     protected abstract DiffUtil.Callback getDiffUtilCallback(List<T> oldItems, List<T> newItems);
 

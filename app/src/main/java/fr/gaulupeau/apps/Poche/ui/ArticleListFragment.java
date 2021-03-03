@@ -190,6 +190,11 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article, ListA
         return detachObjects(qb.list());
     }
 
+    @Override
+    protected int getItemCountPerPage() {
+        return PER_PAGE_LIMIT;
+    }
+
     private QueryBuilder<Article> getQueryBuilder() {
         QueryBuilder<Article> qb = articleDao.queryBuilder()
                 .where(ArticleDao.Properties.ArticleId.isNotNull());

@@ -85,6 +85,11 @@ public class TagListFragment extends RecyclerViewListFragment<Tag, TagListAdapte
         return tags;
     }
 
+    @Override
+    protected int getItemCountPerPage() {
+        return PER_PAGE_LIMIT;
+    }
+
     private QueryBuilder<Tag> getQueryBuilder() {
         QueryBuilder<Tag> qb = tagDao.queryBuilder();
 
