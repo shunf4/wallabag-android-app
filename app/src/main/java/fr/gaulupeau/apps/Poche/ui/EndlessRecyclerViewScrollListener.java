@@ -99,8 +99,8 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     }
 
     // Call this method whenever performing new searches
-    public void resetState() {
-        this.currentPage = this.startingPageIndex;
+    public void resetState(int newCurrentPage) {
+        this.currentPage = newCurrentPage;
         this.previousTotalItemCount = 0;
         this.loading = true;
     }

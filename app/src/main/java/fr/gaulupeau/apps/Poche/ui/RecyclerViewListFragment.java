@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
@@ -191,17 +192,19 @@ public abstract class RecyclerViewListFragment<T, V extends RecyclerView.Adapter
         }
 
         List<T> items = getItems(preserveUntilPage);
+        List<T> nextPageItems = getItems(preserveUntilPage + 1);
 
         List<T> oldItemList = new ArrayList<T>(itemList);
 
         itemList.subList(preserveUntilPage * perPage, itemList.size()).clear();
         itemList.addAll(items);
+        itemList.addAll(nextPageItems);
 
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(getDiffUtilCallback(oldItemList, itemList));
 
         diffResult.dispatchUpdatesTo(listAdapter);
 
-        if (scrollListener != null) scrollListener.resetState();
+        if (scrollListener != null) scrollListener.resetState(preserveUntilPage + 1 /* Because we loaded an extra page */);
 
         if (scrollToTop && recyclerView != null) {
             recyclerView.scrollToPosition(0);
