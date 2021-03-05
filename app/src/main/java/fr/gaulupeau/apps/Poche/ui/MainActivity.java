@@ -3,12 +3,14 @@ package fr.gaulupeau.apps.Poche.ui;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -17,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -428,6 +431,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_main_switchPage:
+                switchPage();
+                return true;
+
             case R.id.menu_main_changeSortOrder:
                 switchSortOrder();
                 return true;
@@ -646,6 +653,44 @@ public class MainActivity extends AppCompatActivity
         }
 
         setSortOrder(currentFragment);
+    }
+
+    private void switchPage() {
+        EditText editText = new EditText(this);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.input_page_number)
+                .setView(editText)
+                .setPositiveButton(
+                        R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (currentFragment instanceof ArticleListsFragment) {
+                                    ArticleListsFragment articleListsFragment = (ArticleListsFragment) currentFragment;
+                                    try {
+                                        int page = Integer.parseInt(editText.getText().toString()) - 1;
+                                        if (page >= 0) {
+                                            articleListsFragment.setCurrentFragmentPage(page);
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                )
+                .setNegativeButton(
+                        R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        }
+                )
+                .show();
     }
 
     private void setSortOrder(Fragment fragment) {

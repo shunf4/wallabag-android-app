@@ -9,6 +9,12 @@
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
     <item
+        android:id="@+id/menu_main_switchPage"
+        android:title="@string/menu_switchPage"
+        android:icon="?attr/icon_page"
+        android:orderInCategory="8"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/menu_main_changeSortOrder"
         android:title="@string/menu_lists_changeSortOrder"
         android:icon="?attr/icon_sort"

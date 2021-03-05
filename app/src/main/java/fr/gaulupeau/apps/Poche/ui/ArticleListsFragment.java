@@ -268,4 +268,8 @@ public class ArticleListsFragment extends Fragment
         }
     }
 
+    public void setCurrentFragmentPage(int pageNumber) {
+        ArticleListFragment currentFragment = getCurrentFragment();
+        currentFragment.loadToPage(pageNumber);
+    }
 }

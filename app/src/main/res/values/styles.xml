@@ -11,6 +11,7 @@
         <attr name="icon_read_undo" format="reference"/>
         <attr name="icon_search" format="reference"/>
         <attr name="icon_sort" format="reference"/>
+        <attr name="icon_page" format="reference"/>
         <attr name="welcome_logo" format="reference"/>
         <attr name="icon_running" format="reference"/>
         <attr name="icon_volume" format="reference"/>
@@ -35,6 +36,7 @@
         <item name="icon_read_undo">@drawable/ic_undo_white_24dp</item>
         <item name="icon_search">@drawable/ic_search_white_24dp</item>
         <item name="icon_sort">@drawable/ic_sort_white_24dp</item>
+        <item name="icon_page">@drawable/ic_auto_stories_24px</item>
         <item name="welcome_logo">@drawable/welcome</item>
         <item name="icon_running">@drawable/ic_running_24dp</item>
         <item name="icon_notes">@drawable/ic_musical_notes_24dp</item>

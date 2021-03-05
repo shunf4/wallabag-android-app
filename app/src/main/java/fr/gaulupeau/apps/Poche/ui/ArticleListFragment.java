@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -188,6 +190,48 @@ public class ArticleListFragment extends RecyclerViewListFragment<Article, ListA
         }
 
         return detachObjects(qb.list());
+    }
+
+    protected List<Article> getItems(int offsetPage, int pagesToLoad) {
+        QueryBuilder<Article> qb = getQueryBuilder()
+                .limit(PER_PAGE_LIMIT * pagesToLoad);
+
+        if (offsetPage > 0) {
+            qb.offset(PER_PAGE_LIMIT * offsetPage);
+        }
+
+        return detachObjects(qb.list());
+    }
+
+    protected void loadToPage(int page) {
+        Log.d(TAG, String.format("loadToPage(page: %d)", page));
+
+        int currentPage = scrollListener.getCurrentPage();
+        int pagesToLoad = page - currentPage;
+        if (pagesToLoad < 0) {
+            pagesToLoad = 0;
+        }
+        List<Article> items = getItems(currentPage + 1, pagesToLoad);
+        final int addedItemsCount = items.size();
+        itemList.addAll(items);
+        scrollListener.setCurrentPageAndTotalItemCount(
+                currentPage + pagesToLoad,
+                itemList.size()
+        );
+        recyclerView.post(() -> {
+            listAdapter.notifyItemRangeInserted(
+                    scrollListener.getCurrentItemCount(), addedItemsCount);
+
+            int scrollTo1 = page * PER_PAGE_LIMIT + 1;
+            int scrollTo2 = page * PER_PAGE_LIMIT;
+
+            recyclerView.scrollToPosition(Math.min(scrollTo1, itemList.size() - 1));
+            recyclerView.scrollToPosition(Math.min(scrollTo2, itemList.size() - 1));
+//
+//            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+//                recyclerView.scrollToPosition(page * PER_PAGE_LIMIT);
+//            }, 500);
+        });
     }
 
     @Override

@@ -349,4 +349,7 @@
     <string name="pref_name_ui_mathRendering_enabled">数学函数解析</string>
     <string name="pref_desc_misc_ftsIcuTokenizer_enabled">使用 ICU 分词器进行全文搜索索引 (否则使用通用 unicode61 分词器)。可以改善中日韩统一表意文字的搜索结果。需要“完整更新”使该选项生效</string>
     <string name="pref_name_misc_ftsIcuTokenizer_enabled">对全文搜索使用 ICU 分词器</string>
+    <string name="menu_switchPage">跳转页面</string>
+    <string name="input_page_number">输入页码：</string>
+    <string name="cancel">取消</string>
 </resources>
