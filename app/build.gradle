@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 228
-        versionName "2.4.2-shunf4-1"
+        versionName "2.4.2-shunf4-4"
 
         javaCompileOptions {
             annotationProcessorOptions {
